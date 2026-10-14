@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PMOC Climatização — Painel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0C111C;--panel:#141C2B;--panel-2:#1B2436;--panel-3:#222D42;--ink:#EAF1FB;--muted:#94A3BC;--faint:#647189;
+  --line:#26324A;--line-soft:#1E2942;--accent:#4D8DF0;--accent-deep:#2C66C9;--accent-wash:#16243E;
+  --green:#36C28B;--red:#F2655C;--amber:#E8B24A;--violet:#9B7BF0;
+  --shadow:0 1px 2px rgba(0,0,0,.4);--r:13px;--r-sm:9px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;padding:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(1200px 500px at 80% -10%,rgba(77,141,240,.10),transparent 60%);
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;margin:0;letter-spacing:-.01em}
+.mono{font-family:'Space Mono',ui-monospace,monospace}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1460px;margin:0 auto;padding:0 20px 50px}
+
+.bar{display:flex;align-items:center;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#101826,#0C111C);flex-wrap:wrap}
+.bar .logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#1F4FB0);display:grid;place-items:center;flex:0 0 auto}
+.bar h1{font-size:18px;font-weight:700}
+.bar .ey{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.bar .sp{flex:1}
+.live{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-family:'Space Mono'}
+.live .dot{width:9px;height:9px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.live.off .dot{background:var(--red);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(54,194,139,.5)}70%{box-shadow:0 0 0 7px rgba(54,194,139,0)}100%{box-shadow:0 0 0 0 rgba(54,194,139,0)}}
+
+.btn{border:1px solid var(--line);background:var(--panel-2);color:var(--ink);border-radius:var(--r-sm);padding:8px 14px;font-size:12.5px;font-weight:600;display:inline-flex;gap:7px;align-items:center}
+.btn:hover{border-color:var(--accent);color:#fff}
+.btn.sm{padding:6px 11px;font-size:12px}
+.btn.go{border-color:var(--accent-deep);background:linear-gradient(180deg,var(--accent),var(--accent-deep));color:#fff}
+.btn.go:hover{filter:brightness(1.08)}
+.btn.stop{border-color:#5a2b2b;color:var(--red)}.btn.stop:hover{background:#2a1818}
+
+.tabs{display:flex;gap:4px;padding:12px 20px 0;max-width:1460px;margin:0 auto;flex-wrap:wrap}
+.tabs button{border:1px solid transparent;background:transparent;color:var(--muted);border-radius:var(--r-sm) var(--r-sm) 0 0;padding:9px 15px;font-size:12.5px;font-weight:600;border-bottom:2px solid transparent}
+.tabs button:hover{color:var(--ink);background:var(--panel-2)}
+.tabs button.on{color:var(--ink);background:var(--panel);border-color:var(--line);border-bottom-color:var(--accent)}
+
+.unitbar{display:flex;gap:7px;align-items:center;padding:14px 0 0;flex-wrap:wrap}
+.unitbar>span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-right:3px}
+.uchip{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:99px;padding:6px 12px;font-size:11.5px;font-weight:600}
+.uchip:hover{border-color:var(--accent);color:var(--ink)}
+.uchip.on{background:var(--accent-wash);border-color:var(--accent);color:var(--ink)}
+.uchip b{font-family:'Space Mono';color:var(--accent);margin-left:5px;font-size:11px}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:16px}
+.kpi{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(77,141,240,.16),transparent 70%)}
+.kpi .lab{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kpi .val{font-family:'Space Grotesk';font-weight:700;font-size:23px;margin-top:6px;line-height:1.05}
+.kpi.green .val{color:var(--green)}.kpi.blue .val{color:var(--accent)}.kpi.amber .val{color:var(--amber)}.kpi.red .val{color:var(--red)}
+.kpi .sub{font-size:11px;color:var(--faint);margin-top:2px}
+
+.grid{display:grid;gap:14px;margin-top:14px}
+.g-2{grid-template-columns:1.15fr .85fr}
+.g-2b{grid-template-columns:1fr 1fr}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:13px 16px 0;flex-wrap:wrap}
+.card .hd h2{font-size:14.5px}
+.card .hd .hint{font-size:11px;color:var(--faint);font-family:'Space Mono'}
+.card .bd{padding:12px 16px 16px}
+.card .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+.banner{border-left:2px solid var(--accent);background:var(--accent-wash);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:10px 13px;font-size:11.5px;color:var(--muted);margin-bottom:12px}
+.banner.warn{border-left-color:var(--amber);background:#241F12}
+
+.rk{display:grid;grid-template-columns:1fr auto;gap:4px;padding:7px 0;border-bottom:1px solid var(--line-soft)}
+.rk:last-child{border-bottom:0}
+.rk .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.rk .nm{font-size:12px;color:var(--ink)}
+.rk .v{font-family:'Space Mono';font-size:11px;color:var(--accent);white-space:nowrap}
+.rk .barwrap{grid-column:1/-1;height:7px;border-radius:4px;background:var(--panel-3);overflow:hidden}
+.rk .barwrap>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-deep),var(--accent))}
+
+svg.chart{width:100%;height:auto;display:block;font-family:'Inter'}
+.donutbox{display:grid;place-items:center;padding:4px 0 10px}
+.donutbox svg{width:min(100%,230px)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin:0 13px 5px 0}
+.chip i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.chip b{font-family:'Space Mono';color:var(--ink)}
+
+.inp{border:1px solid var(--line);background:var(--panel-2);color:var(--ink);border-radius:var(--r-sm);padding:8px 11px;font-family:inherit;font-size:12.5px;outline:0}
+.inp::placeholder{color:var(--faint)}
+.inp:focus{border-color:var(--accent)}
+select.inp{cursor:pointer}
+.search{width:min(250px,100%)}
+
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{text-align:left;padding:8px 10px;font-size:10px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:1}
+thead th.r,tbody td.r{text-align:right}
+tbody td{padding:7px 10px;border-bottom:1px solid var(--line-soft);color:var(--muted)}
+tbody tr:hover{background:var(--panel-2)}
+tbody td b{color:var(--ink);font-weight:600}
+td.mono,th.r{font-variant-numeric:tabular-nums}
+.tb-wrap{max-height:460px;overflow:auto}
+.tb-wrap.tall{max-height:620px}
+.muted{color:var(--muted)}
+.tag{font-family:'Space Mono';color:var(--accent);font-weight:700;font-size:11.5px}
+.st{display:inline-block;padding:3px 9px;border-radius:99px;font-size:10.5px;font-weight:700;white-space:nowrap;font-family:'Space Mono'}
+.st.ok{background:rgba(54,194,139,.14);color:var(--green)}
+.st.warn{background:rgba(232,178,74,.14);color:var(--amber)}
+.st.bad{background:rgba(242,101,92,.14);color:var(--red)}
+.st.none{background:var(--panel-3);color:var(--faint)}
+.st.info{background:var(--accent-wash);color:var(--accent)}
+.ibtn{width:27px;height:27px;border:1px solid var(--line);background:var(--panel-2);color:var(--accent);border-radius:7px;display:inline-grid;place-items:center;font-size:12px;line-height:1}
+.ibtn:hover{border-color:var(--accent);background:var(--accent-wash)}
+.ibtn.del{color:var(--red)}.ibtn.del:hover{border-color:#5a2b2b;background:#2a1818}
+.acts{display:flex;gap:5px}
+.none-row{padding:30px;text-align:center;color:var(--faint);font-size:12.5px}
+
+.view{display:none}.view.on{display:block}
+
+.ov{position:fixed;inset:0;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;background:rgba(6,10,18,.76);z-index:50;overflow-y:auto}
+.ov.open{display:flex}
+.md{width:min(790px,100%);background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 24px 60px rgba(0,0,0,.6);margin:auto}
+.md .mh{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.md .mh .ey{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.md .mh h2{font-size:17px;margin-top:4px}
+.md .mb{padding:17px 18px;max-height:min(64vh,620px);overflow-y:auto}
+.md .mf{display:flex;align-items:center;justify-content:flex-end;gap:9px;padding:14px 18px;border-top:1px solid var(--line);background:var(--panel-2);border-radius:0 0 var(--r) var(--r)}
+.f2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.f3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.fld{display:grid;gap:5px}
+.fld label{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.fld .inp,.fld textarea{width:100%}
+.fld textarea{border:1px solid var(--line);background:var(--panel-2);color:var(--ink);border-radius:var(--r-sm);padding:9px 11px;font-family:inherit;font-size:12.5px;min-height:74px;resize:vertical;outline:0}
+.fld textarea:focus{border-color:var(--accent)}
+.pg{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;margin-top:12px}
+.pg>summary{padding:10px 13px;background:var(--panel-2);color:var(--ink);font-size:12px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pg>summary::-webkit-details-marker{display:none}
+.pg[open]>summary{border-bottom:1px solid var(--line)}
+.pi{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:8px 13px;border-bottom:1px solid var(--line-soft);font-size:12px;color:var(--muted)}
+.pi:last-child{border-bottom:0}
+.pi input[type=checkbox]{width:15px;height:15px;margin-top:1px;accent-color:var(--accent)}
+.pi .pn{font-family:'Space Mono';color:var(--faint);font-size:10.5px}
+label.pi{cursor:pointer}
+label.pi:hover{background:var(--panel-2)}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(14px);padding:11px 17px;border-radius:var(--r-sm);background:var(--panel-3);border:1px solid var(--accent);color:var(--ink);font-size:12.5px;font-weight:600;box-shadow:0 14px 34px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:.2s;z-index:80}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{text-align:center;color:var(--faint);font-size:11px;padding:22px}
+
+@media(max-width:1080px){.kpis{grid-template-columns:repeat(2,1fr)}.g-2,.g-2b{grid-template-columns:1fr}}
+@media(max-width:700px){.wrap{padding:0 13px 36px}.tabs{padding:10px 13px 0}.bar{padding:13px}.bar h1{font-size:16px}.kpis{grid-template-columns:1fr}.f2,.f3{grid-template-columns:1fr}.search{width:100%}.card .hd{flex-direction:column;align-items:stretch}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{.bar,.tabs,.unitbar,.tools,.acts{display:none!important}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="8.5" rx="2"/><path d="M6 16.5c0 1.6 1.2 1.6 1.2 3.2M11.4 16.5c0 1.6 1.2 1.6 1.2 3.2M16.8 16.5c0 1.6 1.2 1.6 1.2 3.2"/><path d="M5.5 8.2h13"/></svg></div>
+  <div><div class="ey">PMOC · Climatização · Grupo CIA Brinquedos</div><h1>Controle de preventivas</h1></div>
+  <div class="sp"></div>
+  <div class="live" id="live"><span class="dot"></span><span id="liveTxt">salvo neste aparelho</span></div>
+  <button class="btn sm" id="btnBackup">⤓ Backup</button>
+  <button class="btn sm" id="btnRestore">⤒ Restaurar</button>
+  <input type="file" id="fileRestore" accept="application/json" hidden>
+  <button class="btn go" id="btnNovaPrevTop">+ Registrar preventiva</button>
+</div>
+
+<div class="tabs" id="tabs">
+  <button data-view="geral" class="on">Visão geral</button>
+  <button data-view="inventario">Inventário</button>
+  <button data-view="programacao">Programação</button>
+  <button data-view="historico">Preventivas feitas</button>
+  <button data-view="plano">Plano de manutenção</button>
+</div>
+
+<div class="wrap">
+  <div class="unitbar" id="unitFilter"></div>
+
+  <!-- ============ VISÃO GERAL ============ -->
+  <section class="view on" id="view-geral">
+    <div class="kpis">
+      <div class="kpi blue"><div class="lab">Equipamentos</div><div class="val" id="kTotal">0</div><div class="sub" id="kTotalSub">—</div></div>
+      <div class="kpi green"><div class="lab">Preventivas em dia</div><div class="val" id="kOk">0</div><div class="sub" id="kOkSub">—</div></div>
+      <div class="kpi amber"><div class="lab">Vencem em 30 dias</div><div class="val" id="kWarn">0</div><div class="sub">Programar a execução</div></div>
+      <div class="kpi red"><div class="lab">Vencidas</div><div class="val" id="kBad">0</div><div class="sub">Passaram dos 3 meses</div></div>
+    </div>
+
+    <div class="grid g-2">
+      <div class="card">
+        <div class="hd"><h2>Equipamentos por unidade</h2><span class="hint" id="barHint"></span></div>
+        <div class="bd"><div id="barUnit"></div></div>
+      </div>
+      <div class="card">
+        <div class="hd"><h2>Situação das preventivas</h2><span class="hint">ciclo trimestral</span></div>
+        <div class="bd">
+          <div class="donutbox"><svg id="donutStatus" viewBox="0 0 200 200" role="img" aria-label="Situação das preventivas"></svg></div>
+          <div id="legendStatus"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g-2b">
+      <div class="card">
+        <div class="hd"><h2>Gás refrigerante</h2><span class="hint">por aparelho</span></div>
+        <div class="bd"><div id="gasList"></div></div>
+      </div>
+      <div class="card">
+        <div class="hd"><h2>Marcas no parque</h2><span class="hint">por aparelho</span></div>
+        <div class="bd"><div id="marcaList"></div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="hd"><h2>O que precisa de atenção</h2><span class="hint">vencidas e vencendo em 30 dias</span></div>
+      <div class="bd">
+        <div class="tb-wrap"><table>
+          <thead><tr><th>Tag</th><th>Unidade</th><th>Setor</th><th>Última</th><th>Vence</th><th>Situação</th><th class="r">Ação</th></tr></thead>
+          <tbody id="tbAtencao"></tbody>
+        </table></div>
+        <div class="none-row" id="emptyAtencao" hidden>Nada vencido nem vencendo nos próximos 30 dias.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INVENTÁRIO ============ -->
+  <section class="view" id="view-inventario">
+    <div class="card" style="margin-top:16px">
+      <div class="hd">
+        <h2>Inventário · <span class="mono" id="invCount">0</span> equipamentos</h2>
+        <div class="tools">
+          <input class="inp search" id="invSearch" placeholder="Buscar tag, setor, marca…" aria-label="Buscar no inventário">
+          <select class="inp" id="invSit" aria-label="Filtrar por situação no cadastro"><option value="">Cadastro: todos</option></select>
+          <select class="inp" id="invStatus" aria-label="Filtrar por situação da preventiva">
+            <option value="">Preventiva: todas</option>
+            <option value="bad">Vencidas</option><option value="warn">Vencem em 30 dias</option>
+            <option value="ok">Em dia</option><option value="none">Sem registro</option>
+          </select>
+          <button class="btn sm" id="btnExportInv">⤓ CSV</button>
+          <button class="btn sm go" id="btnNovoEquip">+ Equipamento</button>
+        </div>
+      </div>
+      <div class="bd">
+        <div class="banner">Clique no lápis para editar qualquer dado ou deixar uma observação. Tudo que você mudar fica gravado neste aparelho.</div>
+        <div class="tb-wrap tall"><table>
+          <thead><tr><th>Tag</th><th>Unidade</th><th>Setor</th><th>Local</th><th class="r">Cap.</th><th>Marca</th><th>Gás</th><th>Wi-Fi</th><th>Preventiva</th><th>Obs</th><th class="r"></th></tr></thead>
+          <tbody id="tbInv"></tbody>
+        </table></div>
+        <div class="none-row" id="emptyInv" hidden>Nenhum equipamento com esses filtros.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROGRAMAÇÃO ============ -->
+  <section class="view" id="view-programacao">
+    <div class="card" style="margin-top:16px">
+      <div class="hd">
+        <h2>Programação de preventivas</h2>
+        <div class="tools">
+          <input class="inp search" id="progSearch" placeholder="Buscar equipamento…" aria-label="Buscar na programação">
+          <select class="inp" id="progPer" aria-label="Periodicidade">
+            <option value="T">Trimestral</option><option value="S">Semestral</option><option value="A">Anual</option>
+          </select>
+          <button class="btn sm" id="btnExportProg">⤓ CSV</button>
+          <button class="btn sm go" id="btnProgLote">⊞ Programar em lote</button>
+        </div>
+      </div>
+      <div class="bd">
+        <div class="banner">A próxima data sai sozinha a partir da última execução. Não existe rotina mensal: tudo que era mensal no PMOC passou a trimestral.</div>
+        <div class="tb-wrap tall"><table>
+          <thead><tr><th>Tag</th><th>Unidade</th><th>Setor</th><th>Última</th><th>Vence</th><th>Programada</th><th>Situação</th><th class="r">Ações</th></tr></thead>
+          <tbody id="tbProg"></tbody>
+        </table></div>
+        <div class="none-row" id="emptyProg" hidden>Nenhum equipamento com esses filtros.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HISTÓRICO ============ -->
+  <section class="view" id="view-historico">
+    <div class="card" style="margin-top:16px">
+      <div class="hd">
+        <h2>Preventivas feitas · <span class="mono" id="histCount">0</span></h2>
+        <div class="tools">
+          <input class="inp search" id="histSearch" placeholder="Buscar tag, técnico…" aria-label="Buscar no histórico">
+          <select class="inp" id="histPer" aria-label="Periodicidade">
+            <option value="">Todas</option><option value="T">Trimestral</option><option value="S">Semestral</option>
+            <option value="A">Anual</option><option value="E">Eventual</option>
+          </select>
+          <button class="btn sm" id="btnExportHist">⤓ CSV</button>
+          <button class="btn sm go" id="btnNovaPrev">+ Registrar</button>
+        </div>
+      </div>
+      <div class="bd">
+        <div class="banner">Cada registro guarda os itens do plano que foram cumpridos. É a evidência de execução do PMOC.</div>
+        <div class="tb-wrap tall"><table>
+          <thead><tr><th>Data</th><th>Tag</th><th>Unidade</th><th>Setor</th><th>Periodicidade</th><th>Executante</th><th class="r">Itens</th><th>Observação</th><th class="r"></th></tr></thead>
+          <tbody id="tbHist"></tbody>
+        </table></div>
+        <div class="none-row" id="emptyHist">Nenhuma preventiva registrada ainda. Use "Registrar preventiva" para lançar a primeira.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PLANO ============ -->
+  <section class="view" id="view-plano">
+    <div class="card" style="margin-top:16px">
+      <div class="hd">
+        <h2>Plano de manutenção · <span class="mono" id="planoCount">0</span> itens</h2>
+        <div class="tools">
+          <span class="chip"><i style="background:var(--accent)"></i>Trimestral</span>
+          <span class="chip"><i style="background:var(--violet)"></i>Semestral</span>
+          <span class="chip"><i style="background:var(--amber)"></i>Anual</span>
+          <button class="btn sm" id="btnExportPlano">⤓ CSV</button>
+        </div>
+      </div>
+      <div class="bd">
+        <div class="banner warn">Os itens marcados como mensais no PMOC original foram reclassificados como trimestrais, conforme definido: não existe rotina mensal.</div>
+        <div id="planoList"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="hd"><h2>Notas sobre os filtros</h2><span class="hint">PMOC</span></div>
+      <div class="bd" style="color:var(--muted);font-size:12.5px;line-height:1.65">
+        <p style="margin:0 0 8px">Filtros classe G4 e F5, ou equivalentes da norma anterior, são descartáveis e saturam em cerca de 90 dias.</p>
+        <p style="margin:0 0 8px">Não se reaproveita filtro avariado, mesmo com dano pequeno, nem filtro já saturado.</p>
+        <p style="margin:0">O filtro novo deve ter grau de filtragem e resistência equivalentes ao substituído, conforme o fabricante do condicionador.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>PMOC Climatização · dados gravados apenas neste aparelho · <span class="mono" id="footStamp">—</span></footer>
+
+<!-- ===== Modal equipamento ===== -->
+<div class="ov" id="ovEquip" role="dialog" aria-modal="true" aria-labelledby="eqTitle">
+  <div class="md">
+    <div class="mh"><div><div class="ey" id="eqEyebrow">Inventário</div><h2 id="eqTitle">Editar equipamento</h2></div><button class="ibtn" data-close aria-label="Fechar">✕</button></div>
+    <div class="mb">
+      <div class="f3">
+        <div class="fld"><label for="eqTag">Tag</label><input class="inp" id="eqTag" placeholder="03088 ou SEM TAG"></div>
+        <div class="fld"><label for="eqUnid">Unidade</label><input class="inp" id="eqUnid" list="dlUnid"><datalist id="dlUnid"></datalist></div>
+        <div class="fld"><label for="eqPav">Pavimento</label><input class="inp" id="eqPav" placeholder="1º andar, Térreo…"></div>
+      </div>
+      <div class="f2" style="margin-top:12px">
+        <div class="fld"><label for="eqSetor">Setor</label><input class="inp" id="eqSetor"></div>
+        <div class="fld"><label for="eqLocal">Local / responsável</label><input class="inp" id="eqLocal"></div>
+      </div>
+      <div class="f3" style="margin-top:12px">
+        <div class="fld"><label for="eqCap">Capacidade (BTU/h)</label><input class="inp" id="eqCap" placeholder="12000"></div>
+        <div class="fld"><label for="eqMarca">Marca</label><input class="inp" id="eqMarca" list="dlMarca"><datalist id="dlMarca"></datalist></div>
+        <div class="fld"><label for="eqGas">Gás</label><input class="inp" id="eqGas" list="dlGas"><datalist id="dlGas"></datalist></div>
+      </div>
+      <div class="f3" style="margin-top:12px">
+        <div class="fld"><label for="eqModelo">Modelo</label><input class="inp" id="eqModelo"></div>
+        <div class="fld"><label for="eqSerie">Nº de série</label><input class="inp" id="eqSerie"></div>
+        <div class="fld"><label for="eqWifi">Wi-Fi</label><select class="inp" id="eqWifi"><option value="">—</option><option>Sim</option><option>Não</option></select></div>
+      </div>
+      <div class="f2" style="margin-top:12px">
+        <div class="fld"><label for="eqSit">Situação no cadastro</label><input class="inp" id="eqSit" list="dlSit"><datalist id="dlSit"></datalist></div>
+        <div class="fld"><label for="eqFolha">Folha de campo</label><input class="inp" id="eqFolha"></div>
+      </div>
+      <div class="fld" style="margin-top:12px"><label for="eqObs">Observação</label><textarea id="eqObs" placeholder="Divergências, pendências, o que confirmar em campo…"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn stop" id="eqDelete">Excluir</button><button class="btn" data-close>Cancelar</button><button class="btn go" id="eqSave">Salvar equipamento</button></div>
+  </div>
+</div>
+
+<!-- ===== Modal preventiva ===== -->
+<div class="ov" id="ovPrev" role="dialog" aria-modal="true" aria-labelledby="pvTitle">
+  <div class="md">
+    <div class="mh"><div><div class="ey">Execução</div><h2 id="pvTitle">Registrar preventiva</h2></div><button class="ibtn" data-close aria-label="Fechar">✕</button></div>
+    <div class="mb">
+      <div class="f2">
+        <div class="fld"><label for="pvEquip">Equipamento</label><select class="inp" id="pvEquip"></select></div>
+        <div class="fld"><label for="pvData">Data da execução</label><input class="inp" type="date" id="pvData"></div>
+      </div>
+      <div class="f3" style="margin-top:12px">
+        <div class="fld"><label for="pvPer">Periodicidade</label><select class="inp" id="pvPer"><option value="T">Trimestral</option><option value="S">Semestral</option><option value="A">Anual</option><option value="E">Eventual</option></select></div>
+        <div class="fld"><label for="pvTec">Executante</label><input class="inp" id="pvTec" list="dlTec" placeholder="Itamar"><datalist id="dlTec"></datalist></div>
+        <div class="fld"><label for="pvOS">Nº da OS</label><input class="inp" id="pvOS"></div>
+      </div>
+      <div class="fld" style="margin-top:12px"><label for="pvObs">Observação</label><textarea id="pvObs" placeholder="Serviço terceirizado, peça trocada, pendência deixada em campo…"></textarea></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:17px;flex-wrap:wrap">
+        <div><div class="ey" style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700">Checklist do PMOC</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:3px">Marque os serviços executados · <b class="mono" id="pvCount">0</b> marcados</div></div>
+        <div class="tools"><button class="btn sm" id="pvMarkAll">Marcar todos</button><button class="btn sm" id="pvClearAll">Limpar</button></div>
+      </div>
+      <div id="pvPlano"></div>
+    </div>
+    <div class="mf"><button class="btn stop" id="pvDelete" hidden>Excluir registro</button><button class="btn" data-close>Cancelar</button><button class="btn go" id="pvSave">Salvar preventiva</button></div>
+  </div>
+</div>
+
+<!-- ===== Modal programar ===== -->
+<div class="ov" id="ovProg" role="dialog" aria-modal="true" aria-labelledby="pgTitle">
+  <div class="md" style="width:min(520px,100%)">
+    <div class="mh"><div><div class="ey">Planejamento</div><h2 id="pgTitle">Programar preventiva</h2></div><button class="ibtn" data-close aria-label="Fechar">✕</button></div>
+    <div class="mb">
+      <p id="pgWho" style="margin:0 0 14px;color:var(--muted);font-size:12.5px"></p>
+      <div class="f2">
+        <div class="fld"><label for="pgData">Data programada</label><input class="inp" type="date" id="pgData"></div>
+        <div class="fld"><label for="pgTec">Técnico previsto</label><input class="inp" id="pgTec" list="dlTec" placeholder="Itamar"></div>
+      </div>
+      <div class="fld" style="margin-top:12px"><label for="pgObs">Observação</label><textarea id="pgObs" placeholder="Combinado com a unidade, precisa de escada, liberar sala…"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn stop" id="pgClear">Remover</button><button class="btn" data-close>Cancelar</button><button class="btn go" id="pgSave">Salvar programação</button></div>
+  </div>
+</div>
+
+<!-- ===== Modal lote ===== -->
+<div class="ov" id="ovLote" role="dialog" aria-modal="true" aria-labelledby="loTitle">
+  <div class="md" style="width:min(560px,100%)">
+    <div class="mh"><div><div class="ey">Planejamento</div><h2 id="loTitle">Programar em lote</h2></div><button class="ibtn" data-close aria-label="Fechar">✕</button></div>
+    <div class="mb">
+      <p style="margin:0 0 14px;color:var(--muted);font-size:12.5px">Marca a mesma data para todos os aparelhos de uma unidade. Use para fechar a rota de um dia.</p>
+      <div class="f2">
+        <div class="fld"><label for="loUnid">Unidade</label><select class="inp" id="loUnid"></select></div>
+        <div class="fld"><label for="loData">Data programada</label><input class="inp" type="date" id="loData"></div>
+      </div>
+      <div class="f2" style="margin-top:12px">
+        <div class="fld"><label for="loTec">Técnico previsto</label><input class="inp" id="loTec" list="dlTec" placeholder="Itamar"></div>
+        <div class="fld"><label for="loSo">Aplicar em</label><select class="inp" id="loSo"><option value="all">Todos da unidade</option><option value="bad">Só as vencidas</option><option value="badwarn">Vencidas e a vencer</option><option value="none">Só as sem registro</option></select></div>
+      </div>
+      <p id="loPreview" class="mono" style="margin:14px 0 0;color:var(--accent);font-size:12px"></p>
+    </div>
+    <div class="mf"><button class="btn" data-close>Cancelar</button><button class="btn go" id="loSave">Programar</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+
+var BASE = [{"id":1,"unid":"CD","pav":"1º andar","setor":"Gerência","local":"Cleonci","tag":"03970-S01","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Local atualizado","folha":"1","obs":"Tag com rasura após o 'S' (li 03970-S01). BTU e gás vieram do cadastro (tag 03970); o local do cadastro está antigo"},{"id":2,"unid":"CD","pav":"1º andar","setor":"Qualidade","local":"","tag":"03079","wifi":"Sim","cap":"9000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"1","obs":""},{"id":3,"unid":"CD","pav":"1º andar","setor":"COMEX","local":"Sala (Erick)","tag":"03087","wifi":"Sim","cap":"9000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Cadastro incompleto","folha":"1","obs":""},{"id":4,"unid":"CD","pav":"1º andar","setor":"Copa","local":"","tag":"03600","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R410","modelo":"","serie":"","sit":"Não cadastrado","folha":"1","obs":""},{"id":5,"unid":"CD","pav":"1º andar","setor":"Comercial","local":"Lucas","tag":"03626","wifi":"Não","cap":"18000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"2","obs":"Anotado 'S/ Wi-Fi'"},{"id":6,"unid":"CD","pav":"1º andar","setor":"Comercial","local":"Lucas","tag":"03592","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"2","obs":""},{"id":7,"unid":"CD","pav":"1º andar","setor":"Comercial","local":"Sala do Sr. Alonso","tag":"03593","wifi":"Sim","cap":"9000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"2","obs":"Nome lido como 'Alonso'"},{"id":8,"unid":"CD","pav":"1º andar","setor":"Comercial","local":"Sala do Sr. João","tag":"03596","wifi":"Sim","cap":"9000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"2","obs":""},{"id":9,"unid":"CD","pav":"1º andar","setor":"Desenvolvimento","local":"","tag":"03085","wifi":"Sim","cap":"30000","marca":"não anotado","gas":"R410","modelo":"","serie":"","sit":"Não cadastrado","folha":"2","obs":"Marca não anotada; rasura antes do '410'. Possível aparelho do cadastro sem tag: Midea 42AGVQC30M5, 30.000 BTU/h, R410A, série 0625B17370085"},{"id":10,"unid":"CD","pav":"1º andar","setor":"Sala do Sr. Josué","local":"","tag":"03088","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"42AGVQI24M5","serie":"4723B13402657","sit":"Confere","folha":"2","obs":""},{"id":11,"unid":"CD","pav":"1º andar","setor":"Contabilidade / Controladoria","local":"","tag":"03076","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"42AGVQI24M5","serie":"1125B17781671","sit":"Confere","folha":"2","obs":""},{"id":12,"unid":"CD","pav":"1º andar","setor":"Contabilidade / Controladoria","local":"","tag":"03075","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"42AGVQI24M5","serie":"4723B13402660","sit":"Confere","folha":"2","obs":""},{"id":13,"unid":"CD","pav":"1º andar","setor":"COE","local":"","tag":"03074","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"42AGVQI24M5","serie":"1125B17781688","sit":"Local atualizado","folha":"2","obs":""},{"id":14,"unid":"CD","pav":"1º andar","setor":"Jurídico","local":"","tag":"03072","wifi":"Sim","cap":"9000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Local atualizado","folha":"2","obs":""},{"id":15,"unid":"CD","pav":"1º andar","setor":"Jurídico","local":"Sala do Sr. César","tag":"03073","wifi":"Sim","cap":"9000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Local atualizado","folha":"2","obs":""},{"id":16,"unid":"CD","pav":"1º andar","setor":"Antiga sala do Wesley","local":"","tag":"03071","wifi":"Sim","cap":"9000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Confere","folha":"2","obs":""},{"id":17,"unid":"CD","pav":"Térreo","setor":"Sala do Servidor","local":"","tag":"03617","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R410","modelo":"42AGVQC18M5","serie":"2723B12192952","sit":"Confere","folha":"3","obs":""},{"id":18,"unid":"CD","pav":"Térreo","setor":"Sala do Servidor","local":"","tag":"03619","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R410","modelo":"42AGVQC18M5","serie":"2723B12192953","sit":"Confere","folha":"3","obs":""},{"id":19,"unid":"CD","pav":"Térreo","setor":"Financeiro","local":"Sala do Sr. Romildo","tag":"03586","wifi":"Sim","cap":"12000","marca":"Midea","gas":"R32","modelo":"42AGVQI12M5","serie":"0224B13746689","sit":"Local atualizado","folha":"3","obs":"Nome lido como 'Romildo'"},{"id":20,"unid":"CD","pav":"Térreo","setor":"Logística / Transporte","local":"Sala","tag":"03612","wifi":"Sim","cap":"12000","marca":"Midea","gas":"R32","modelo":"42AGVQI12M5","serie":"0224B13746700","sit":"Local atualizado","folha":"3","obs":""},{"id":21,"unid":"CD","pav":"Térreo","setor":"Logística","local":"","tag":"03618","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"42AGVQI24M5","serie":"4723B13402442","sit":"Confere","folha":"4","obs":""},{"id":22,"unid":"CD","pav":"Térreo","setor":"Faturamento / Financeiro","local":"","tag":"03607","wifi":"Sim","cap":"30000","marca":"Midea","gas":"R410","modelo":"","serie":"","sit":"Não cadastrado","folha":"4","obs":"Tag 03607 não existe no cadastro; o cadastro tem 03067 (Financeiro / Faturamento, 30.000 BTU/h, R410A): possível troca de dígitos"},{"id":23,"unid":"CD","pav":"Térreo","setor":"Compras","local":"","tag":"03608","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"42AGVQI24M5","serie":"4723B13402663","sit":"Confere","folha":"4","obs":""},{"id":24,"unid":"CD","pav":"Térreo","setor":"Recepção","local":"Jaqueline","tag":"03598","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"42AGVQI24M5","serie":"4723B13402659","sit":"Local atualizado","folha":"4","obs":""},{"id":25,"unid":"CD","pav":"Térreo","setor":"Sala de Reunião","local":"","tag":"SEM TAG","wifi":"Sim","cap":"12000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"4","obs":"Sem tag; 2 aparelhos pelas aspas (\") da folha"},{"id":26,"unid":"CD","pav":"Térreo","setor":"Sala de Reunião","local":"","tag":"SEM TAG","wifi":"Sim","cap":"12000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"4","obs":"Sem tag; repetido pelas aspas (\") da folha"},{"id":27,"unid":"CD","pav":"Térreo","setor":"Refeitório","local":"","tag":"03105","wifi":"Sim","cap":"30000","marca":"Midea","gas":"R410","modelo":"","serie":"","sit":"Não cadastrado","folha":"4","obs":""},{"id":28,"unid":"CD","pav":"Térreo","setor":"Refeitório","local":"","tag":"03106","wifi":"Sim","cap":"30000","marca":"Midea","gas":"R410","modelo":"","serie":"","sit":"Não cadastrado","folha":"4","obs":"Dados repetidos pelas aspas (\") da 03105"},{"id":29,"unid":"CD","pav":"Térreo","setor":"RH","local":"Sala 1","tag":"02451","wifi":"Sim","cap":"","marca":"Midea","gas":"não anotado","modelo":"","serie":"","sit":"Não cadastrado","folha":"4","obs":"BTU e gás não anotados e a tag não está no cadastro (a 03107, na mesma sala, é 18.000 / R32)"},{"id":30,"unid":"CD","pav":"Térreo","setor":"RH","local":"Sala 1","tag":"03107","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"4","obs":""},{"id":31,"unid":"CD","pav":"Térreo","setor":"RH","local":"Sala 2","tag":"SEM TAG","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"4","obs":"Sem tag"},{"id":32,"unid":"Fampartec","pav":"","setor":"Refeitório","local":"","tag":"04023","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"5","obs":""},{"id":33,"unid":"Fampartec","pav":"","setor":"Refeitório","local":"","tag":"02405","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"5","obs":""},{"id":34,"unid":"Fampartec","pav":"","setor":"Recepção","local":"","tag":"02861","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":35,"unid":"Fampartec","pav":"","setor":"Sala do Sr. Wesley","local":"","tag":"02870","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":36,"unid":"Fampartec","pav":"","setor":"Ferramentaria","local":"Sala do Japonês","tag":"02865","wifi":"Sim","cap":"12000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":37,"unid":"Fampartec","pav":"","setor":"Técnico de Segurança","local":"Marcela","tag":"02864","wifi":"Sim","cap":"12000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":38,"unid":"Fampartec","pav":"","setor":"Projetos","local":"Sr. Ruan","tag":"02871","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":39,"unid":"Fampartec","pav":"","setor":"Projetos","local":"Sr. Ruan","tag":"02872","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":40,"unid":"Fampartec","pav":"","setor":"TI","local":"","tag":"04794","wifi":"Sim","cap":"12000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":41,"unid":"Fampartec","pav":"","setor":"Laboratório","local":"Sala 01 — Sra. Angélica","tag":"04801","wifi":"Sim","cap":"12000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":42,"unid":"Fampartec","pav":"","setor":"Laboratório","local":"Sala 02 — Sra. Márcia","tag":"04795","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":43,"unid":"Fampartec","pav":"","setor":"Laboratório","local":"Sala 02 — Sra. Márcia","tag":"04796","wifi":"Sim","cap":"24000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":44,"unid":"Fampartec","pav":"","setor":"Sra. Angélica","local":"Sra. Angélica","tag":"02830","wifi":"Sim","cap":"12000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":45,"unid":"Fampartec","pav":"","setor":"Sala (vazia)","local":"","tag":"02828","wifi":"Sim","cap":"12000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"6","obs":""},{"id":46,"unid":"R.C de Fátima","pav":"1º piso","setor":"Produção","local":"Ismênia","tag":"03214","wifi":"Não","cap":"58000","marca":"Elgin","gas":"R32","modelo":"PVF160C2DA","serie":"ARC092400102136","sit":"Local atualizado","folha":"R.C 1","obs":"Folha: 58.000 BTU/h (valor adotado). Cadastro traz 56.000 — cadastro desatualizado. Cadastro: Piso Superior; folha: 1º piso / Produção. Gás R32 confere."},{"id":47,"unid":"R.C de Fátima","pav":"1º piso","setor":"Produção","local":"Ismênia","tag":"01811","wifi":"Não","cap":"54000","marca":"Carrier","gas":"R410","modelo":"42ZQVB60C5","serie":"3322B10728382","sit":"Local atualizado","folha":"R.C 1","obs":"Folha: 54.000 BTU/h (valor adotado). Cadastro traz 57.000 — cadastro desatualizado. Gás R410A preenchido pelo cadastro. Cadastro: Piso Superior; folha: 1º piso / Produção."},{"id":48,"unid":"R.C de Fátima","pav":"1º piso","setor":"Produção","local":"Ismênia","tag":"01842","wifi":"Não","cap":"54000","marca":"Carrier","gas":"R410","modelo":"42ZQVB60C5","serie":"3322B10728559","sit":"Local atualizado","folha":"R.C 1","obs":"Folha: 54.000 BTU/h (valor adotado). Cadastro traz 57.000 — cadastro desatualizado. Gás R410A preenchido pelo cadastro. Cadastro: Piso Superior; folha: 1º piso / Produção."},{"id":49,"unid":"R.C de Fátima","pav":"1º piso","setor":"Produção","local":"Ismênia","tag":"01812","wifi":"Não","cap":"54000","marca":"Carrier","gas":"R410","modelo":"42ZQVB60C5","serie":"2422B10331089","sit":"Local atualizado","folha":"R.C 1","obs":"Folha: 54.000 BTU/h (valor adotado). Cadastro traz 57.000 — cadastro desatualizado. Gás R410A preenchido pelo cadastro. Cadastro: Piso Superior; folha: 1º piso / Produção."},{"id":50,"unid":"R.C de Fátima","pav":"1º piso","setor":"Produção","local":"Ismênia","tag":"01814","wifi":"Não","cap":"54000","marca":"Carrier","gas":"R410","modelo":"42ZQVB60C5","serie":"3322B10728556","sit":"Local atualizado","folha":"R.C 1","obs":"Folha: 54.000 BTU/h (valor adotado). Cadastro traz 57.000 — cadastro desatualizado. Gás R410A preenchido pelo cadastro. Cadastro: Piso Superior; folha: 1º piso / Produção."},{"id":51,"unid":"R.C de Fátima","pav":"1º piso","setor":"Produção","local":"Ismênia","tag":"02376","wifi":"Não","cap":"57000","marca":"Gree","gas":"R32","modelo":"","serie":"","sit":"Não cadastrado","folha":"R.C 1","obs":"Tag 02376 não existe no cadastro de equipamentos. Dados só da folha (Gree, R32, 57.000 BTU/h)."},{"id":52,"unid":"R.C de Fátima","pav":"1º piso","setor":"Produção","local":"Ismênia","tag":"01844","wifi":"Não","cap":"90000","marca":"Gree","gas":"R22","modelo":"","serie":"","sit":"Local atualizado","folha":"R.C 1","obs":"Folha sem BTU/h e sem gás. Preenchidos pelo cadastro: Gree R22, 90.000 BTU/h (Piso Superior). Folha registra 1º piso / Produção."},{"id":53,"unid":"R.C de Fátima","pav":"Térreo","setor":"Produção","local":"Sra. Silmara","tag":"03224","wifi":"Não","cap":"58000","marca":"Elgin","gas":"R32","modelo":"PVFI60C2DA","serie":"ARC092400093582","sit":"Confere","folha":"R.C 1","obs":"Cadastro: Piso Inferior (= Térreo), Elgin R32 58.000 BTU/h — confere com a folha."},{"id":54,"unid":"R.C de Fátima","pav":"Térreo","setor":"Produção","local":"Sra. Silmara","tag":"00996","wifi":"Não","cap":"54000","marca":"Carrier","gas":"R32","modelo":"","serie":"","sit":"Confere","folha":"R.C 1","obs":"Folha: 54.000 BTU/h (valor adotado). Cadastro traz 57.000 — cadastro desatualizado. Gás R32 preenchido pelo cadastro. Cadastro sem modelo."},{"id":55,"unid":"R.C de Fátima","pav":"Térreo","setor":"Produção","local":"Sra. Silmara","tag":"02691","wifi":"Não","cap":"58000","marca":"Elgin","gas":"R32","modelo":"PDFI60C2DA","serie":"ARC022400037304","sit":"Confere","folha":"R.C 1","obs":"Folha: 58.000 BTU/h (valor adotado). Cadastro traz 56.000 — cadastro desatualizado. Gás R32 confere."},{"id":56,"unid":"R.C de Fátima","pav":"Térreo","setor":"Produção","local":"Sra. Silmara","tag":"02690","wifi":"Não","cap":"58000","marca":"Elgin","gas":"R32","modelo":"PDFI60C2DA","serie":"ARC022400037281","sit":"Confere","folha":"R.C 1","obs":"Folha: 58.000 BTU/h (valor adotado). Cadastro traz 56.000 — cadastro desatualizado. Gás R32 confere."},{"id":57,"unid":"R.C de Fátima","pav":"Térreo","setor":"Produção","local":"Sra. Silmara","tag":"02689","wifi":"Não","cap":"58000","marca":"Elgin","gas":"R32","modelo":"PDFI60C2DA","serie":"","sit":"Confere","folha":"R.C 1","obs":"Folha: 58.000 BTU/h (valor adotado). Cadastro traz 56.000 — cadastro desatualizado. Gás R32 confere."},{"id":58,"unid":"R.C de Fátima","pav":"Térreo","setor":"Produção","local":"Sra. Silmara","tag":"02688","wifi":"Não","cap":"58000","marca":"Elgin","gas":"R32","modelo":"PDFI60C2DA","serie":"","sit":"Confere","folha":"R.C 1","obs":"Folha: 58.000 BTU/h (valor adotado). Cadastro traz 56.000 — cadastro desatualizado. Gás R32 confere."},{"id":59,"unid":"R.C de Fátima","pav":"Térreo","setor":"Produção","local":"Sra. Silmara","tag":"03220","wifi":"Não","cap":"58000","marca":"Elgin","gas":"R32","modelo":"PVFI60C2DA","serie":"ARC092400102139","sit":"Confere","folha":"R.C 1","obs":"Cadastro: Piso Inferior (= Térreo), Elgin R32 58.000 BTU/h — confere com a folha."},{"id":60,"unid":"R.C de Fátima","pav":"","setor":"Qualidade","local":"","tag":"00229","wifi":"Não","cap":"9000","marca":"Agratto","gas":"R410","modelo":"ICST12QFR4-02","serie":"VPF18","sit":"Confere","folha":"R.C 1","obs":"Folha: 9.000 BTU/h (valor adotado). Cadastro traz 12.000 — cadastro desatualizado. Gás R410A preenchido pelo cadastro. Marca Agratto confirmada pelo cadastro."},{"id":61,"unid":"R.C de Fátima","pav":"","setor":"Cozinha do Refeitório","local":"","tag":"00253","wifi":"Não","cap":"30000","marca":"TCL","gas":"R410","modelo":"TAC-30CSA1","serie":"941113G109AA000230","sit":"Local atualizado","folha":"R.C 1","obs":"Cadastro: Recepção, TCL R410A 30.000 BTU/h. Folha: Cozinha do Refeitório — local atualizado. BTU/h e gás conferem."},{"id":62,"unid":"R.C de Fátima","pav":"","setor":"Refeitório","local":"","tag":"00286","wifi":"Não","cap":"48000","marca":"Elgin","gas":"R32","modelo":"PEFI48B2NC","serie":"","sit":"Confere","folha":"R.C 1","obs":"Gás estava em branco na folha; preenchido pelo cadastro (Elgin R32, 48.000 BTU/h, Refeitório) — confere."},{"id":63,"unid":"R.C de Fátima","pav":"","setor":"Refeitório","local":"","tag":"00285","wifi":"Não","cap":"48000","marca":"Elgin","gas":"R32","modelo":"PEFI48B2NC","serie":"","sit":"Confere","folha":"R.C 1","obs":"Gás estava em branco na folha; preenchido pelo cadastro (Elgin R32, 48.000 BTU/h, Refeitório) — confere."},{"id":64,"unid":"R.C de Fátima","pav":"","setor":"Portaria","local":"","tag":"00140","wifi":"Não","cap":"9000","marca":"Agratto","gas":"R410","modelo":"ICST09FR4-02","serie":"","sit":"Confere","folha":"R.C 1","obs":"Cadastro: Portaria, Agratto R410A 9.000 BTU/h — confere com a folha."},{"id":65,"unid":"Audaz Matriz","pav":"","setor":"Sala do Sr. Aparecido","local":"Sr. Aparecido","tag":"02523","wifi":"Não","cap":"18000","marca":"TCL","gas":"R32","modelo":"TAC-18CHTG1-INV","serie":"941587H300AA001285","sit":"Local atualizado","folha":"Audaz 1","obs":"Cadastro (unidade \"Audaz 1805\"): Sala Encarregado, TCL R32 18.000 BTU/h. Folha: Sala do Sr. Aparecido — local atualizado. Demais dados conferem."},{"id":66,"unid":"Audaz Matriz","pav":"","setor":"Dosimetria","local":"","tag":"02521","wifi":"Não","cap":"18000","marca":"TCL","gas":"R32","modelo":"TAC-18CHTG1-INV","serie":"941587H321AA000644","sit":"Local atualizado","folha":"Audaz 1","obs":"Cadastro (unidade \"Audaz 1805\"): Laboratório, TCL R32 18.000 BTU/h. Folha: Dosimetria — local atualizado. Demais dados conferem."},{"id":67,"unid":"Audaz Matriz","pav":"","setor":"Dosimetria","local":"","tag":"00987","wifi":"Não","cap":"18000","marca":"Agratto","gas":"R410","modelo":"ICS18QFR4-02","serie":"","sit":"Local atualizado","folha":"Audaz 1","obs":"Cadastro (unidade \"Audaz 1805\"): Laboratório, Agratto R410A 18.000 BTU/h. Folha: Dosimetria — local atualizado. Demais dados conferem."},{"id":68,"unid":"Audaz Matriz","pav":"","setor":"Vestiário Feminino","local":"","tag":"02563","wifi":"Não","cap":"12000","marca":"Midea","gas":"R32","modelo":"42AFFCI12S5","serie":"0424B13911767","sit":"Local atualizado","folha":"Audaz 1","obs":"Cadastro (unidade \"Audaz 1805\"): Sala Márcia, Midea R32 12.000 BTU/h. Folha: Vestiário Feminino — local atualizado. Demais dados conferem."},{"id":69,"unid":"Audaz Matriz","pav":"","setor":"Sala Fria","local":"","tag":"SEM TAG","wifi":"Não","cap":"12000","marca":"EOS","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 1","obs":"Sem tag anotada — não é possível cruzar com o cadastro. Marca lida como \"EOS\"; confirmar na etiqueta."},{"id":70,"unid":"Audaz Matriz","pav":"","setor":"Sala Fria","local":"","tag":"SEM TAG","wifi":"Não","cap":"12000","marca":"EOS","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 1","obs":"Sem tag anotada — não é possível cruzar com o cadastro. Marca lida como \"EOS\"; confirmar na etiqueta."},{"id":71,"unid":"Audaz Matriz","pav":"","setor":"Sala Fria","local":"","tag":"SEM TAG","wifi":"Não","cap":"","marca":"Consul","gas":"não anotado","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 1","obs":"Sem tag anotada — não é possível cruzar com o cadastro. Sem BTU/h e sem gás na folha."},{"id":72,"unid":"Audaz 625","pav":"","setor":"Refeitório","local":"","tag":"SEM TAG","wifi":"Não","cap":"18000","marca":"Eletrolux","gas":"R22","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Não há nenhum AC cadastrado no Refeitório da Audaz 625 — aparelho novo ou cadastro desatualizado para este setor."},{"id":73,"unid":"Audaz 625","pav":"","setor":"Sala Sra. Gislaine","local":"","tag":"02611","wifi":"Não","cap":"12000","marca":"TCL","gas":"R32","modelo":"TAC-12CHTG1-INV","serie":"941585L370AA002537","sit":"Local atualizado","folha":"Audaz 625 - 1","obs":"Cadastro registra o local como \"Gerência\" (mesma tag, TCL, R32, 12.000 BTU/h) — local atualizado pela folha de campo."},{"id":74,"unid":"Audaz 625","pav":"","setor":"Qualidade","local":"Sra. Vanessa","tag":"SEM TAG","wifi":"Não","cap":"12000","marca":"York","gas":"R22","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Possível correspondência com a tag 48 do cadastro (Sala Qualidade, York, R22, 12.000 BTU/h) — confirmar etiqueta em campo."},{"id":75,"unid":"Audaz 625","pav":"","setor":"PCP","local":"","tag":"SEM TAG","wifi":"Não","cap":"12000","marca":"York","gas":"R22","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Cadastro traz a Sala PCP com marca Eletrolux (tag 49); a folha anotou York — divergência de marca, confirmar em campo."},{"id":76,"unid":"Audaz 625","pav":"","setor":"ADM","local":"","tag":"SEM TAG","wifi":"Não","cap":"12000","marca":"York","gas":"R22","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Não há setor \"ADM\" no cadastro atual; possível correspondência com a tag 50 (Sala Amostras, York, R22, 12.000 BTU/h) — confirmar."},{"id":77,"unid":"Audaz 625","pav":"","setor":"Bala Líquida","local":"","tag":"SEM TAG","wifi":"Não","cap":"60000","marca":"Gree","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 1/6 iguais do setor. Folha: 60.000 BTU/h (valor adotado). Cadastro traz 57.000 BTU/h para as 6 unidades Piso Teto da Linha de Produção (tags 51 a 56) — cadastro desatualizado. Sem tag anotada."},{"id":78,"unid":"Audaz 625","pav":"","setor":"Bala Líquida","local":"","tag":"SEM TAG","wifi":"Não","cap":"60000","marca":"Gree","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 2/6 iguais do setor. Folha: 60.000 BTU/h (valor adotado). Cadastro traz 57.000 BTU/h para as 6 unidades Piso Teto da Linha de Produção (tags 51 a 56) — cadastro desatualizado. Sem tag anotada."},{"id":79,"unid":"Audaz 625","pav":"","setor":"Bala Líquida","local":"","tag":"SEM TAG","wifi":"Não","cap":"60000","marca":"Gree","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 3/6 iguais do setor. Folha: 60.000 BTU/h (valor adotado). Cadastro traz 57.000 BTU/h para as 6 unidades Piso Teto da Linha de Produção (tags 51 a 56) — cadastro desatualizado. Sem tag anotada."},{"id":80,"unid":"Audaz 625","pav":"","setor":"Bala Líquida","local":"","tag":"SEM TAG","wifi":"Não","cap":"60000","marca":"Gree","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 4/6 iguais do setor. Folha: 60.000 BTU/h (valor adotado). Cadastro traz 57.000 BTU/h para as 6 unidades Piso Teto da Linha de Produção (tags 51 a 56) — cadastro desatualizado. Sem tag anotada."},{"id":81,"unid":"Audaz 625","pav":"","setor":"Bala Líquida","local":"","tag":"SEM TAG","wifi":"Não","cap":"60000","marca":"Gree","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 5/6 iguais do setor. Folha: 60.000 BTU/h (valor adotado). Cadastro traz 57.000 BTU/h para as 6 unidades Piso Teto da Linha de Produção (tags 51 a 56) — cadastro desatualizado. Sem tag anotada."},{"id":82,"unid":"Audaz 625","pav":"","setor":"Bala Líquida","local":"","tag":"SEM TAG","wifi":"Não","cap":"60000","marca":"Gree","gas":"R32","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 6/6 iguais do setor. Folha: 60.000 BTU/h (valor adotado). Cadastro traz 57.000 BTU/h para as 6 unidades Piso Teto da Linha de Produção (tags 51 a 56) — cadastro desatualizado. Sem tag anotada."},{"id":83,"unid":"Audaz 625","pav":"","setor":"Creme de Avelã","local":"","tag":"SEM TAG","wifi":"Não","cap":"","marca":"Midea","gas":"não anotado","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 1/5 iguais do setor, sem especificações internas anotadas na folha. Cadastro só tem 2 tags de AC na Linha de avelã (04822 e 04823) — quantidade não bate, confirmar em campo."},{"id":84,"unid":"Audaz 625","pav":"","setor":"Creme de Avelã","local":"","tag":"SEM TAG","wifi":"Não","cap":"","marca":"Midea","gas":"não anotado","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 2/5 iguais do setor, sem especificações internas anotadas na folha. Cadastro só tem 2 tags de AC na Linha de avelã (04822 e 04823) — quantidade não bate, confirmar em campo."},{"id":85,"unid":"Audaz 625","pav":"","setor":"Creme de Avelã","local":"","tag":"SEM TAG","wifi":"Não","cap":"","marca":"Midea","gas":"não anotado","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 3/5 iguais do setor, sem especificações internas anotadas na folha. Cadastro só tem 2 tags de AC na Linha de avelã (04822 e 04823) — quantidade não bate, confirmar em campo."},{"id":86,"unid":"Audaz 625","pav":"","setor":"Creme de Avelã","local":"","tag":"SEM TAG","wifi":"Não","cap":"","marca":"Midea","gas":"não anotado","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 4/5 iguais do setor, sem especificações internas anotadas na folha. Cadastro só tem 2 tags de AC na Linha de avelã (04822 e 04823) — quantidade não bate, confirmar em campo."},{"id":87,"unid":"Audaz 625","pav":"","setor":"Creme de Avelã","local":"","tag":"SEM TAG","wifi":"Não","cap":"","marca":"Midea","gas":"não anotado","modelo":"","serie":"","sit":"Sem tag","folha":"Audaz 625 - 1","obs":"Aparelho 5/5 iguais do setor, sem especificações internas anotadas na folha. Cadastro só tem 2 tags de AC na Linha de avelã (04822 e 04823) — quantidade não bate, confirmar em campo."},{"id":88,"unid":"Audaz 625","pav":"","setor":"Montagem","local":"","tag":"04823","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Cadastro incompleto","folha":"Audaz 625 - 1","obs":"Cadastro está sem marca/modelo/gás (descrição: \"Aspiração de pó para evitar a contaminação da máquina\"). Local no cadastro é \"Linha de avelã\"; a folha registra \"Montagem\" — dados (Midea, R32, 18.000 BTU/h, C/Wi-Fi) vieram só da folha."},{"id":89,"unid":"Audaz 625","pav":"","setor":"Montagem","local":"","tag":"04822","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R32","modelo":"","serie":"","sit":"Cadastro incompleto","folha":"Audaz 625 - 1","obs":"Mesma situação do 04823: cadastro sem especificações e local \"Linha de avelã\" desatualizado (folha diz \"Montagem\"). Dados repetidos por aspas (\") na folha."},{"id":90,"unid":"Audaz 625","pav":"","setor":"Montagem","local":"","tag":"02566","wifi":"Não","cap":"","marca":"TCL","gas":"R410","modelo":"","serie":"","sit":"Não cadastrado","folha":"Audaz 625 - 1","obs":"Tag original rasurada/ilegível na folha; a reescrita abaixo foi lida como 02566 — confirmar na etiqueta do aparelho em campo. BTU/h não anotado na folha. Tag 02566 não encontrada no cadastro de equipamentos."},{"id":91,"unid":"Brinplas","pav":"","setor":"Sala das Impressoras 3D","local":"","tag":"00743","wifi":"Não","cap":"12000","marca":"Agratto","gas":"R410","modelo":"ICST12QFR4-02","serie":"","sit":"Local atualizado","folha":"Brinplas - 1","obs":"Cadastro registra o setor como \"Projetos\"; local atualizado pela informação que você passou."},{"id":92,"unid":"Brinplas","pav":"","setor":"Qualidade","local":"","tag":"00710","wifi":"Não","cap":"24000","marca":"Elgin","gas":"não anotado","modelo":"HXQI24B2FA","serie":"ARC198090003200","sit":"Local atualizado","folha":"Brinplas - 1","obs":"Cadastro registra o setor como \"Sala Amostras\"; local atualizado. Gás não anotado no cadastro."},{"id":93,"unid":"Brinplas","pav":"","setor":"Qualidade","local":"","tag":"00317","wifi":"Não","cap":"12000","marca":"Agratto","gas":"R410","modelo":"ICST12QFR4-02","serie":"VPF15256","sit":"Local atualizado","folha":"Brinplas - 1","obs":"Cadastro registra o setor como \"Projetos\"; local atualizado."},{"id":94,"unid":"Brinplas","pav":"","setor":"Gerência","local":"","tag":"00675","wifi":"Não","cap":"7000","marca":"Gree","gas":"R22","modelo":"GWCN70ANC1A3A1","serie":"","sit":"Confere","folha":"Brinplas - 1","obs":""},{"id":95,"unid":"Brinplas","pav":"","setor":"Recrutamento","local":"","tag":"02342","wifi":"Não","cap":"12000","marca":"Midea","gas":"R410","modelo":"42AFVQG12V5","serie":"2122B10221421","sit":"Local atualizado","folha":"Brinplas - 1","obs":"Cadastro registra o setor como \"Sala Entrevista\" — provavelmente o mesmo local (entrevistas de recrutamento); local atualizado."},{"id":96,"unid":"Brinplas","pav":"","setor":"Refeitório","local":"","tag":"01117","wifi":"Não","cap":"60000","marca":"Gree","gas":"R22","modelo":"GST60-22L/A(I)","serie":"1571652201310","sit":"Confere","folha":"Brinplas - 1","obs":""},{"id":97,"unid":"Brinplas","pav":"","setor":"Sala Arminda","local":"","tag":"01176","wifi":"Não","cap":"9000","marca":"Agratto","gas":"R410","modelo":"ICST09QFR4-02","serie":"VPA15813","sit":"Local atualizado","folha":"Brinplas - 1","obs":"Cadastro registra o setor como \"Sala Gestão\" — provavelmente onde a Arminda está; local atualizado."},{"id":98,"unid":"Brinplas","pav":"","setor":"Montagem","local":"","tag":"01378","wifi":"Não","cap":"9000","marca":"Gree","gas":"R22","modelo":"GWCN09DAND1A3A/I","serie":"17174","sit":"Local atualizado","folha":"Brinplas - 1","obs":"Cadastro registra o setor como \"Sala Corte Espuma\" — divergência maior que as outras; confirmar se é o mesmo local ou se o aparelho mudou de lugar."},{"id":99,"unid":"Brinplas","pav":"","setor":"Tampografia","local":"","tag":"01391","wifi":"Não","cap":"18000","marca":"Carrier","gas":"R22","modelo":"42LUQC18C5","serie":"","sit":"Confere","folha":"Brinplas - 1","obs":""},{"id":100,"unid":"Brinplas","pav":"","setor":"Recepção Adm","local":"","tag":"02333","wifi":"Sim","cap":"18000","marca":"Midea","gas":"R410","modelo":"42AGVQC18M5","serie":"0423B11585156","sit":"Confere","folha":"Brinplas - 1","obs":""}];
+var PLANO = [{"n":"1","d":"Filtro de Ar","itens":[{"n":"1.1","d":"Limpar o elemento Filtrante ou substituir em casos de avarias","p":"T","o":"M"},{"n":"1.2","d":"Verificar Danos e Corrosão do suporte e existência de frestas","p":"T","o":"M"},{"n":"1.3","d":"Verificar e Corrigir o ajuste da moldura na estrutura","p":"T","o":"T"}]},{"n":"2","d":"Bandejas","itens":[{"n":"2.1","d":"Verificar obstrução/inclinação para drenagem do condensado na bandeja","p":"T","o":"M"},{"n":"2.2","d":"Lavar e remover biofilme com produto químico biodegradável, registrado  no Ministério da Saúde.","p":"T","o":"T"},{"n":"2.3","d":"Verificar danos e corrosão","p":"T","o":"T"},{"n":"2.4","d":"Verificar vazamento e corrigir, se necessário","p":"T","o":"M"}]},{"n":"3","d":"Evaporadores","itens":[{"n":"3.1","d":"Lavar e remover biofilme da serpentina com produto químico biodegradável","p":"T","o":"T"},{"n":"3.2","d":"Verificar a existência de danos e corrosão no aletado e moldura","p":"T","o":"T"},{"n":"3.3","d":"Desencrustar serpentinas, se necessário","p":"S","o":"S"},{"n":"3.4","d":"Verificar e limpar turbina do ventilador","p":"T","o":"M"},{"n":"3.5","d":"Verificar a operação de drenagem de água da bandeja","p":"T","o":"M"},{"n":"3.6","d":"Aplicação de produtos antibactericida na serpentina","p":"T","o":"M"},{"n":"3.7","d":"Limpeza externa","p":"T","o":"M"}]},{"n":"4","d":"Gabinetes","itens":[{"n":"4.1","d":"Lavar externamente","p":"T","o":"M"},{"n":"4.2","d":"Lavar internamente","p":"T","o":"T"},{"n":"4.3","d":"Verificar e eliminar danos e corrosão","p":"T","o":"T"},{"n":"4.4","d":"Verificar a vedação dos painéis de fechamento, fixação e danos, substituindo, se necessário","p":"T","o":"M"},{"n":"4.5","d":"Verificar o estado de conservação do isolamento termoacústico e substituir se necessário.","p":"T","o":"M"},{"n":"4.6","d":"Verificar e eliminar ruídos anormais e ou vibrações","p":"T","o":"M"},{"n":"4.7","d":"Verificar o mecanismo de renovação de ar","p":"T","o":"M"},{"n":"4.8","d":"Verificar botoeiras","p":"T","o":"M"}]},{"n":"5","d":"Condensadores","itens":[{"n":"5.1","d":"Lavar e remover incrustações da serpentina com produto químico biodegradável","p":"S","o":"S"},{"n":"5.2","d":"Verificar a existência de danos e corrosão no aletado, gabinete e moldura","p":"T","o":"T"},{"n":"5.3","d":"Verificar calços de borracha","p":"T","o":"T"},{"n":"5.4","d":"Limpeza externa","p":"T","o":"T"}]},{"n":"6","d":"Ventiladores","itens":[{"n":"6.1","d":"Verificar e eliminar sujeiras, danos e corrosão","p":"S","o":"S"},{"n":"6.2","d":"Verificar fixação e amortecedores de vibração","p":"S","o":"S"},{"n":"6.3","d":"Verificar ruído dos mancais e lubrificar, se necessário","p":"T","o":"M"}]},{"n":"7","d":"Motores Elétricos","itens":[{"n":"7.1","d":"Verificar e corrigir fixação e amortecedores de vibração","p":"T","o":"T"},{"n":"7.2","d":"Limpar e verificar danos e corrosão","p":"T","o":"T"},{"n":"7.3","d":"Verificar aterramento","p":"T","o":"T"},{"n":"7.4","d":"Verificar capacitores","p":"T","o":"M"}]},{"n":"8","d":"Compressores","itens":[{"n":"8.1","d":"Verificar e eliminar sujeiras, danos e corrosão","p":"T","o":"T"},{"n":"8.2","d":"Verificar aterramento","p":"A","o":"A"},{"n":"8.3","d":"Verificar fixação e amortecedores de vibração, ruídos anormais","p":"T","o":"M"}]},{"n":"9","d":"Circuito refrigerante","itens":[{"n":"9.1","d":"Verificar e corrigir fixação, danos e corrosão nas tubulações","p":"S","o":"S"},{"n":"9.2","d":"Verificar o estado dos isolamentos térmicos","p":"T","o":"T"},{"n":"9.3","d":"Verificar a existência de vazamento de gás, corrigir se necessário","p":"T","o":"M"}]},{"n":"10","d":"Cirtuito elétrico","itens":[{"n":"10.1","d":"Verificar disjuntores, tomadas, plugs e etc.","p":"T","o":"M"},{"n":"10.2","d":"Verificar aperto dos contatos elétricos","p":"T","o":"T"}]},{"n":"11","d":"MEDIÇÕES (PREENCHIMENTO DE RELATÓRIO TÉCNICO)","itens":[{"n":"11.1","d":"Tensões e corrente","p":"T","o":"M"},{"n":"11.2","d":"Vazões e ar","p":"T","o":"M"},{"n":"11.3","d":"Temparatura de insuflamento, temperatura ambiente, temperatura de retorno","p":"T","o":"M"},{"n":"11.4","d":"Temperatura do ar na entrada e na saída do condensador","p":"T","o":"M"},{"n":"11.5","d":"Pressão de alta","p":"T","o":"T"},{"n":"11.6","d":"Pressão de baixa","p":"T","o":"T"}]}];
+var TECNICOS = ["Anderson","Cicero","Claudio","Dirceu","Fabio","Iago","Itamar","Itamar (terceiro: Dele Frios)","Ivaldo","Leandro","Leonardo","Luciano","Odaír","Rinaldo","Vinicius"];
+var PER_NOME = {T:"Trimestral",S:"Semestral",A:"Anual",E:"Eventual"};
+var PER_MESES = {T:3,S:6,A:12};
+var KEY = "pmoc_clima_dark_v1";
+
+var S = {equip:[], prev:[], prog:{}, seq:1000};
+
+function load(){
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){
+      var d = JSON.parse(raw);
+      S.equip = Array.isArray(d.equip) ? d.equip : BASE.slice();
+      S.prev  = Array.isArray(d.prev) ? d.prev : [];
+      S.prog  = d.prog && typeof d.prog==="object" ? d.prog : {};
+      S.seq   = d.seq || 1000;
+      return;
+    }
+  }catch(e){ console.warn("Não foi possível ler os dados gravados:", e); }
+  S.equip = BASE.slice();
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); setLive("salvo neste aparelho", true); }
+  catch(e){ setLive("não foi possível gravar", false); toast("Não deu para gravar neste navegador. Baixe um backup para não perder o registro."); }
+}
+function setLive(txt, ok){
+  document.getElementById("liveTxt").textContent = txt;
+  document.getElementById("live").classList.toggle("off", !ok);
+}
+function nextId(){ S.seq++; return S.seq; }
+
+function hoje(){ var d=new Date(); d.setHours(0,0,0,0); return d; }
+function parseD(s){ if(!s) return null; var p=String(s).split("-"); if(p.length!==3) return null; var d=new Date(+p[0],+p[1]-1,+p[2]); d.setHours(0,0,0,0); return isNaN(d)?null:d; }
+function fmt(d){ if(!d) return "—"; return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear(); }
+function toISO(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function addMeses(d,m){ var x=new Date(d.getTime()); var dia=x.getDate(); x.setMonth(x.getMonth()+m); if(x.getDate()<dia) x.setDate(0); return x; }
+function dias(a,b){ return Math.round((b-a)/86400000); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function nfmt(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,"."); }
+
+function ultimaPrev(id, per){
+  var lista = S.prev.filter(function(p){ return p.eq===id && (!per || p.per===per); });
+  if(!lista.length) return null;
+  lista.sort(function(a,b){ return b.data.localeCompare(a.data); });
+  return lista[0];
+}
+function statusDe(id, per){
+  per = per || "T";
+  var u = ultimaPrev(id, per);
+  var prog = S.prog[id+"|"+per];
+  if(!u) return {k:"none", label:"Sem registro", ultima:null, prox:null, prog:prog||null};
+  var du = parseD(u.data);
+  var prox = addMeses(du, PER_MESES[per]||3);
+  var d = dias(hoje(), prox);
+  var k = d < 0 ? "bad" : (d <= 30 ? "warn" : "ok");
+  return {k:k, label: d<0 ? ("vencida há "+Math.abs(d)+"d") : (d<=30 ? ("vence em "+d+"d") : "em dia"), ultima:du, prox:prox, dias:d, prog:prog||null};
+}
+function unidades(){
+  var set={}; S.equip.forEach(function(e){ if(e.unid) set[e.unid]=1; });
+  return Object.keys(set).sort();
+}
+function equipVisiveis(){
+  var u = UI.unit;
+  return S.equip.filter(function(e){ return !u || e.unid===u; });
+}
+
+var UI = {view:"geral", unit:"", invQ:"", invSit:"", invStatus:"", progQ:"", progPer:"T", histQ:"", histPer:""};
+
+function toast(msg){
+  var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._h); t._h=setTimeout(function(){ t.classList.remove("show"); },2600);
+}
+function setView(v){
+  UI.view=v;
+  document.querySelectorAll(".view").forEach(function(s){ s.classList.toggle("on", s.id==="view-"+v); });
+  document.querySelectorAll("#tabs button").forEach(function(b){ b.classList.toggle("on", b.dataset.view===v); });
+  window.scrollTo({top:0,behavior:"smooth"});
+  render();
+}
+
+function renderUnitFilter(){
+  var box=document.getElementById("unitFilter");
+  var h='<span>Unidade</span><button class="uchip '+(UI.unit===""?"on":"")+'" data-u="">Todas<b>'+S.equip.length+'</b></button>';
+  unidades().forEach(function(u){
+    var n=S.equip.filter(function(e){return e.unid===u;}).length;
+    h+='<button class="uchip '+(UI.unit===u?"on":"")+'" data-u="'+esc(u)+'">'+esc(u)+'<b>'+n+'</b></button>';
+  });
+  box.innerHTML=h;
+  box.querySelectorAll("button").forEach(function(b){ b.addEventListener("click",function(){ UI.unit=b.dataset.u; render(); }); });
+}
+
+function renderGeral(){
+  var eqs=equipVisiveis();
+  var c={ok:0,warn:0,bad:0,none:0};
+  eqs.forEach(function(e){ c[statusDe(e.id,"T").k]++; });
+  var tot=eqs.length, pct = tot? Math.round(c.ok/tot*100):0;
+  document.getElementById("kTotal").textContent=tot;
+  document.getElementById("kTotalSub").textContent = UI.unit ? UI.unit : unidades().length+" unidades";
+  document.getElementById("kOk").textContent=c.ok;
+  document.getElementById("kOkSub").textContent = tot? (pct+"% do parque filtrado") : "—";
+  document.getElementById("kWarn").textContent=c.warn;
+  document.getElementById("kBad").textContent=c.bad;
+
+  var us = UI.unit ? [UI.unit] : unidades();
+  var dados = us.map(function(u){ return {u:u,n:S.equip.filter(function(e){return e.unid===u;}).length}; }).sort(function(a,b){return b.n-a.n;});
+  var max = dados.length? dados[0].n : 1;
+  document.getElementById("barHint").textContent = dados.reduce(function(s,d){return s+d.n;},0)+" aparelhos";
+  document.getElementById("barUnit").innerHTML = dados.map(function(d){
+    return '<div class="rk"><div class="top"><span class="nm">'+esc(d.u)+'</span><span class="v">'+d.n+'</span></div><div class="barwrap"><i style="width:'+(d.n/max*100)+'%"></i></div></div>';
+  }).join("") || '<div class="none-row">Sem dados.</div>';
+
+  renderDonutStatus(c, tot);
+  renderLista("gasList","gas",eqs);
+  renderLista("marcaList","marca",eqs);
+  renderAtencao(eqs);
+  document.getElementById("footStamp").textContent = fmt(hoje());
+}
+
+function renderDonutStatus(c, tot){
+  var defs=[{k:"ok",n:"Em dia",v:c.ok,cor:"var(--green)",hex:"#36C28B"},
+            {k:"warn",n:"Vencem em 30 dias",v:c.warn,cor:"var(--amber)",hex:"#E8B24A"},
+            {k:"bad",n:"Vencidas",v:c.bad,cor:"var(--red)",hex:"#F2655C"},
+            {k:"none",n:"Sem registro",v:c.none,cor:"var(--faint)",hex:"#647189"}];
+  var arr=defs.filter(function(d){return d.v>0;});
+  var svg=document.getElementById("donutStatus"); svg.innerHTML="";
+  var ns="http://www.w3.org/2000/svg";
+  if(!tot){ document.getElementById("legendStatus").innerHTML='<div class="none-row">Sem dados.</div>'; return; }
+  var cx=100,cy=100,r=74,ir=46,ang=-Math.PI/2;
+  arr.forEach(function(x){
+    var a=x.v/tot*Math.PI*2;
+    if(arr.length===1){
+      var ring=document.createElementNS(ns,"circle");
+      ring.setAttribute("cx",cx);ring.setAttribute("cy",cy);ring.setAttribute("r",(r+ir)/2);
+      ring.setAttribute("fill","none");ring.setAttribute("stroke",x.hex);ring.setAttribute("stroke-width",r-ir);
+      svg.appendChild(ring); return;
+    }
+    var a2=ang+a, large=a>Math.PI?1:0;
+    var p1=[cx+r*Math.cos(ang),cy+r*Math.sin(ang)], p2=[cx+r*Math.cos(a2),cy+r*Math.sin(a2)];
+    var q1=[cx+ir*Math.cos(a2),cy+ir*Math.sin(a2)], q2=[cx+ir*Math.cos(ang),cy+ir*Math.sin(ang)];
+    var d="M"+p1[0]+","+p1[1]+"A"+r+","+r+" 0 "+large+" 1 "+p2[0]+","+p2[1]+"L"+q1[0]+","+q1[1]+"A"+ir+","+ir+" 0 "+large+" 0 "+q2[0]+","+q2[1]+"Z";
+    var path=document.createElementNS(ns,"path");
+    path.setAttribute("d",d); path.setAttribute("fill",x.hex);
+    path.setAttribute("stroke","#141C2B"); path.setAttribute("stroke-width","2.5");
+    svg.appendChild(path);
+    ang=a2;
+  });
+  var t1=document.createElementNS(ns,"text");
+  t1.setAttribute("x",cx);t1.setAttribute("y",cy+1);t1.setAttribute("text-anchor","middle");
+  t1.setAttribute("style","fill:#EAF1FB;font-family:'Space Grotesk',sans-serif;font-size:27px;font-weight:700");
+  t1.textContent=tot; svg.appendChild(t1);
+  var t2=document.createElementNS(ns,"text");
+  t2.setAttribute("x",cx);t2.setAttribute("y",cy+17);t2.setAttribute("text-anchor","middle");
+  t2.setAttribute("style","fill:#647189;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em");
+  t2.textContent="APARELHOS"; svg.appendChild(t2);
+
+  document.getElementById("legendStatus").innerHTML=defs.map(function(x){
+    return '<span class="chip"><i style="background:'+x.hex+'"></i>'+x.n+' <b>'+x.v+'</b></span>';
+  }).join("");
+}
+
+function renderLista(elId, campo, eqs){
+  var m={};
+  eqs.forEach(function(e){ var k=e[campo]||"não anotado"; m[k]=(m[k]||0)+1; });
+  var arr=Object.keys(m).map(function(k){return {k:k,v:m[k]};}).sort(function(a,b){return b.v-a.v;});
+  var max=arr.length?arr[0].v:1, tot=eqs.length;
+  document.getElementById(elId).innerHTML=arr.map(function(x){
+    return '<div class="rk"><div class="top"><span class="nm">'+esc(x.k)+'</span><span class="v">'+x.v+' · '+(tot?Math.round(x.v/tot*100):0)+'%</span></div><div class="barwrap"><i style="width:'+(x.v/max*100)+'%"></i></div></div>';
+  }).join("") || '<div class="none-row">Sem dados.</div>';
+}
+
+function renderAtencao(eqs){
+  var linhas=eqs.map(function(e){ return {e:e,s:statusDe(e.id,"T")}; })
+    .filter(function(x){ return x.s.k==="bad"||x.s.k==="warn"; })
+    .sort(function(a,b){ return (a.s.dias||0)-(b.s.dias||0); }).slice(0,15);
+  var tb=document.getElementById("tbAtencao");
+  document.getElementById("emptyAtencao").hidden = linhas.length>0;
+  tb.innerHTML=linhas.map(function(x){
+    return '<tr><td><span class="tag">'+esc(x.e.tag)+'</span></td><td><b>'+esc(x.e.unid)+'</b></td><td>'+esc(x.e.setor||"—")+'</td>'
+      +'<td class="mono">'+fmt(x.s.ultima)+'</td><td class="mono">'+fmt(x.s.prox)+'</td>'
+      +'<td><span class="st '+x.s.k+'">'+esc(x.s.label)+'</span></td>'
+      +'<td class="r"><button class="btn sm" data-prev="'+x.e.id+'">Registrar</button></td></tr>';
+  }).join("");
+  tb.querySelectorAll("[data-prev]").forEach(function(b){ b.addEventListener("click",function(){ abrirPrev(null, +b.dataset.prev); }); });
+}
+
+function renderInv(){
+  var q=UI.invQ.toLowerCase().trim();
+  var lista=equipVisiveis().filter(function(e){
+    if(UI.invSit && e.sit!==UI.invSit) return false;
+    if(UI.invStatus && statusDe(e.id,"T").k!==UI.invStatus) return false;
+    if(!q) return true;
+    return [e.tag,e.unid,e.setor,e.local,e.marca,e.gas,e.modelo,e.serie,e.obs,e.cap].join(" ").toLowerCase().indexOf(q)>-1;
+  });
+  document.getElementById("invCount").textContent=lista.length;
+  var tb=document.getElementById("tbInv");
+  document.getElementById("emptyInv").hidden = lista.length>0;
+  tb.innerHTML=lista.map(function(e){
+    var s=statusDe(e.id,"T");
+    return '<tr><td><span class="tag">'+esc(e.tag)+'</span></td><td><b>'+esc(e.unid)+'</b></td><td>'+esc(e.setor||"—")+'</td>'
+      +'<td>'+esc(e.local||"—")+'</td><td class="r mono">'+esc(e.cap? nfmt(e.cap):"—")+'</td><td>'+esc(e.marca||"—")+'</td><td class="mono">'+esc(e.gas||"—")+'</td>'
+      +'<td>'+esc(e.wifi||"—")+'</td>'
+      +'<td><span class="st '+s.k+'">'+esc(s.k==="none"?"sem registro":s.label)+'</span></td>'
+      +'<td title="'+esc(e.obs||"")+'">'+(e.obs?'<span class="st info">nota</span>':'—')+'</td>'
+      +'<td class="r"><div class="acts" style="justify-content:flex-end"><button class="ibtn" data-edit="'+e.id+'" title="Editar" aria-label="Editar equipamento">✎</button>'
+      +'<button class="ibtn" data-prev="'+e.id+'" title="Registrar preventiva" aria-label="Registrar preventiva">✓</button></div></td></tr>';
+  }).join("");
+  tb.querySelectorAll("[data-edit]").forEach(function(b){ b.addEventListener("click",function(){ abrirEquip(+b.dataset.edit); }); });
+  tb.querySelectorAll("[data-prev]").forEach(function(b){ b.addEventListener("click",function(){ abrirPrev(null,+b.dataset.prev); }); });
+
+  var sel=document.getElementById("invSit");
+  if(sel.options.length<=1){
+    var set={}; S.equip.forEach(function(e){ if(e.sit) set[e.sit]=1; });
+    Object.keys(set).sort().forEach(function(k){ var o=document.createElement("option"); o.value=k;o.textContent=k; sel.appendChild(o); });
+  }
+}
+
+function renderProg(){
+  var per=UI.progPer, q=UI.progQ.toLowerCase().trim();
+  var lista=equipVisiveis().filter(function(e){
+    if(!q) return true;
+    return [e.tag,e.unid,e.setor,e.local].join(" ").toLowerCase().indexOf(q)>-1;
+  }).map(function(e){ return {e:e,s:statusDe(e.id,per)}; })
+   .sort(function(a,b){
+     var ra={bad:0,warn:1,none:2,ok:3}, d=ra[a.s.k]-ra[b.s.k];
+     if(d) return d;
+     return (a.s.dias==null?9999:a.s.dias)-(b.s.dias==null?9999:b.s.dias);
+   });
+  var tb=document.getElementById("tbProg");
+  document.getElementById("emptyProg").hidden=lista.length>0;
+  tb.innerHTML=lista.map(function(x){
+    var pg=S.prog[x.e.id+"|"+per];
+    return '<tr><td><span class="tag">'+esc(x.e.tag)+'</span></td><td><b>'+esc(x.e.unid)+'</b></td><td>'+esc(x.e.setor||"—")+'</td>'
+      +'<td class="mono">'+fmt(x.s.ultima)+'</td><td class="mono">'+fmt(x.s.prox)+'</td>'
+      +'<td>'+(pg?('<b class="mono">'+fmt(parseD(pg.data))+'</b>'+(pg.tec?'<br><span style="color:var(--faint);font-size:11px">'+esc(pg.tec)+'</span>':'')):'—')+'</td>'
+      +'<td><span class="st '+x.s.k+'">'+esc(x.s.k==="none"?"sem registro":x.s.label)+'</span></td>'
+      +'<td class="r"><div class="acts" style="justify-content:flex-end"><button class="ibtn" data-prog="'+x.e.id+'" title="Programar" aria-label="Programar">◷</button>'
+      +'<button class="ibtn" data-prev="'+x.e.id+'" title="Registrar execução" aria-label="Registrar execução">✓</button></div></td></tr>';
+  }).join("");
+  tb.querySelectorAll("[data-prog]").forEach(function(b){ b.addEventListener("click",function(){ abrirProg(+b.dataset.prog); }); });
+  tb.querySelectorAll("[data-prev]").forEach(function(b){ b.addEventListener("click",function(){ abrirPrev(null,+b.dataset.prev); }); });
+}
+
+function renderHist(){
+  var q=UI.histQ.toLowerCase().trim();
+  var lista=S.prev.map(function(p){
+    return {p:p,e:S.equip.filter(function(x){return x.id===p.eq;})[0]};
+  }).filter(function(x){
+    if(!x.e) return false;
+    if(UI.unit && x.e.unid!==UI.unit) return false;
+    if(UI.histPer && x.p.per!==UI.histPer) return false;
+    if(!q) return true;
+    return [x.e.tag,x.e.unid,x.e.setor,x.p.tec,x.p.obs,x.p.os].join(" ").toLowerCase().indexOf(q)>-1;
+  }).sort(function(a,b){ return b.p.data.localeCompare(a.p.data); });
+  document.getElementById("histCount").textContent=lista.length;
+  var tb=document.getElementById("tbHist");
+  var emp=document.getElementById("emptyHist");
+  emp.hidden=lista.length>0;
+  emp.textContent = (lista.length===0 && (q||UI.histPer||UI.unit))
+    ? "Nenhum registro com esses filtros."
+    : 'Nenhuma preventiva registrada ainda. Use "Registrar preventiva" para lançar a primeira.';
+  tb.innerHTML=lista.map(function(x){
+    return '<tr><td><b class="mono">'+fmt(parseD(x.p.data))+'</b></td><td><span class="tag">'+esc(x.e.tag)+'</span></td>'
+      +'<td>'+esc(x.e.unid)+'</td><td>'+esc(x.e.setor||"—")+'</td>'
+      +'<td><span class="st info">'+esc(PER_NOME[x.p.per]||x.p.per)+'</span></td>'
+      +'<td>'+esc(x.p.tec||"—")+'</td><td class="r mono">'+(x.p.itens?x.p.itens.length:0)+'</td>'
+      +'<td title="'+esc(x.p.obs||"")+'">'+esc((x.p.obs||"—").slice(0,44))+((x.p.obs||"").length>44?"…":"")+'</td>'
+      +'<td class="r"><button class="ibtn" data-edit="'+x.p.id+'" title="Abrir" aria-label="Abrir registro">✎</button></td></tr>';
+  }).join("");
+  tb.querySelectorAll("[data-edit]").forEach(function(b){ b.addEventListener("click",function(){ abrirPrev(+b.dataset.edit); }); });
+}
+
+function corPer(p){ return p==="T"?"var(--accent)":(p==="S"?"var(--violet)":"var(--amber)"); }
+function renderPlano(){
+  var n=0; PLANO.forEach(function(g){ n+=g.itens.length; });
+  document.getElementById("planoCount").textContent=n;
+  document.getElementById("planoList").innerHTML=PLANO.map(function(g){
+    return '<details class="pg" open><summary>'+esc(g.n+". "+g.d)+'<span class="st info">'+g.itens.length+'</span></summary>'
+      + g.itens.map(function(i){
+          return '<div class="pi"><span class="pn">'+esc(i.n)+'</span><span>'+esc(i.d)
+            +(i.o==="M"?' <span class="st warn" style="margin-left:6px">era mensal</span>':'')
+            +'</span><span class="st" style="background:transparent;color:'+corPer(i.p)+';border:1px solid '+corPer(i.p)+'">'+esc(PER_NOME[i.p])+'</span></div>';
+        }).join("")
+      +'</details>';
+  }).join("");
+}
+
+function render(){
+  renderUnitFilter();
+  if(UI.view==="geral") renderGeral();
+  if(UI.view==="inventario") renderInv();
+  if(UI.view==="programacao") renderProg();
+  if(UI.view==="historico") renderHist();
+  if(UI.view==="plano") renderPlano();
+}
+
+function openOv(id){ document.getElementById(id).classList.add("open"); document.body.style.overflow="hidden"; }
+function closeOv(){ document.querySelectorAll(".ov").forEach(function(o){o.classList.remove("open");}); document.body.style.overflow=""; }
+document.addEventListener("click",function(ev){
+  if(ev.target.hasAttribute && ev.target.hasAttribute("data-close")) closeOv();
+  if(ev.target.classList && ev.target.classList.contains("ov")) closeOv();
+});
+document.addEventListener("keydown",function(ev){ if(ev.key==="Escape") closeOv(); });
+
+var eqAtual=null;
+function abrirEquip(id){
+  eqAtual = id==null ? null : S.equip.filter(function(e){return e.id===id;})[0];
+  var e = eqAtual || {};
+  document.getElementById("eqTitle").textContent = eqAtual? "Editar equipamento" : "Novo equipamento";
+  document.getElementById("eqEyebrow").textContent = eqAtual? ("Tag "+(e.tag||"")) : "Inventário";
+  var map={Tag:"tag",Unid:"unid",Pav:"pav",Setor:"setor",Local:"local",Cap:"cap",Marca:"marca",Gas:"gas",Modelo:"modelo",Serie:"serie",Sit:"sit",Folha:"folha",Obs:"obs"};
+  Object.keys(map).forEach(function(f){ document.getElementById("eq"+f).value = e[map[f]]||""; });
+  document.getElementById("eqWifi").value = e.wifi||"";
+  document.getElementById("eqDelete").hidden = !eqAtual;
+  fillDatalists();
+  openOv("ovEquip");
+}
+document.getElementById("eqSave").addEventListener("click",function(){
+  var v=function(id){ return document.getElementById(id).value.trim(); };
+  if(!v("eqUnid")){ toast("Informe a unidade do equipamento."); document.getElementById("eqUnid").focus(); return; }
+  var obj={ tag:v("eqTag")||"SEM TAG", unid:v("eqUnid"), pav:v("eqPav"), setor:v("eqSetor"), local:v("eqLocal"),
+    cap:v("eqCap"), marca:v("eqMarca"), gas:v("eqGas"), modelo:v("eqModelo"), serie:v("eqSerie"),
+    wifi:document.getElementById("eqWifi").value, sit:v("eqSit"), folha:v("eqFolha"), obs:v("eqObs") };
+  if(eqAtual){ Object.keys(obj).forEach(function(k){ eqAtual[k]=obj[k]; }); toast("Equipamento atualizado."); }
+  else { obj.id=nextId(); S.equip.push(obj); toast("Equipamento adicionado."); }
+  save(); closeOv(); render();
+});
+document.getElementById("eqDelete").addEventListener("click",function(){
+  if(!eqAtual) return;
+  if(!confirm("Excluir o equipamento "+eqAtual.tag+"? As preventivas registradas nele também saem.")) return;
+  S.prev = S.prev.filter(function(p){ return p.eq!==eqAtual.id; });
+  Object.keys(S.prog).forEach(function(k){ if(k.split("|")[0]==String(eqAtual.id)) delete S.prog[k]; });
+  S.equip = S.equip.filter(function(e){ return e.id!==eqAtual.id; });
+  save(); closeOv(); render(); toast("Equipamento excluído.");
+});
+
+function fillDatalists(){
+  var mk=function(id,vals){ document.getElementById(id).innerHTML=vals.map(function(v){return '<option value="'+esc(v)+'">';}).join(""); };
+  var u={},m={},g={},s={};
+  S.equip.forEach(function(e){ if(e.unid)u[e.unid]=1; if(e.marca)m[e.marca]=1; if(e.gas)g[e.gas]=1; if(e.sit)s[e.sit]=1; });
+  mk("dlUnid",Object.keys(u).sort()); mk("dlMarca",Object.keys(m).sort());
+  mk("dlGas",Object.keys(g).sort()); mk("dlSit",Object.keys(s).sort()); mk("dlTec",TECNICOS);
+}
+
+var pvAtual=null;
+function abrirPrev(prevId, equipId){
+  pvAtual = prevId==null ? null : S.prev.filter(function(p){return p.id===prevId;})[0];
+  var sel=document.getElementById("pvEquip");
+  sel.innerHTML = S.equip.slice().sort(function(a,b){
+    return (a.unid+a.setor+a.tag).localeCompare(b.unid+b.setor+b.tag);
+  }).map(function(e){ return '<option value="'+e.id+'">'+esc(e.unid+" · "+(e.setor||"—")+" · "+e.tag)+'</option>'; }).join("");
+  document.getElementById("pvTitle").textContent = pvAtual? "Editar preventiva" : "Registrar preventiva";
+  document.getElementById("pvDelete").hidden = !pvAtual;
+  if(pvAtual){
+    sel.value=pvAtual.eq;
+    document.getElementById("pvData").value=pvAtual.data;
+    document.getElementById("pvPer").value=pvAtual.per;
+    document.getElementById("pvTec").value=pvAtual.tec||"";
+    document.getElementById("pvOS").value=pvAtual.os||"";
+    document.getElementById("pvObs").value=pvAtual.obs||"";
+  }else{
+    if(equipId!=null) sel.value=equipId;
+    document.getElementById("pvData").value=toISO(hoje());
+    document.getElementById("pvPer").value="T";
+    document.getElementById("pvTec").value="Itamar";
+    document.getElementById("pvOS").value="O.S Manual - preventiva";
+    document.getElementById("pvObs").value="";
+  }
+  renderPvPlano(pvAtual? pvAtual.itens : null);
+  fillDatalists();
+  openOv("ovPrev");
+}
+function renderPvPlano(marcados){
+  var per=document.getElementById("pvPer").value;
+  document.getElementById("pvPlano").innerHTML=PLANO.map(function(g){
+    var itens;
+    if(per==="T") itens=g.itens.filter(function(i){ return i.p==="T"; });
+    else if(per==="S") itens=g.itens.filter(function(i){ return i.p==="T"||i.p==="S"; });
+    else itens=g.itens.slice();
+    if(!itens.length) return "";
+    return '<details class="pg" open><summary>'+esc(g.n+". "+g.d)+'<span class="st info">'+itens.length+'</span></summary>'
+      + itens.map(function(i){
+          var on = marcados ? marcados.indexOf(i.n)>-1 : true;
+          return '<label class="pi"><input type="checkbox" value="'+esc(i.n)+'"'+(on?" checked":"")+'><span><span class="pn">'+esc(i.n)+'</span> '+esc(i.d)+'</span><span class="st" style="background:transparent;color:'+corPer(i.p)+';border:1px solid '+corPer(i.p)+'">'+esc(PER_NOME[i.p])+'</span></label>';
+        }).join("")
+      +'</details>';
+  }).join("");
+  document.querySelectorAll("#pvPlano input[type=checkbox]").forEach(function(c){ c.addEventListener("change",countPv); });
+  countPv();
+}
+function countPv(){ document.getElementById("pvCount").textContent=document.querySelectorAll("#pvPlano input[type=checkbox]:checked").length; }
+document.getElementById("pvPer").addEventListener("change",function(){ renderPvPlano(null); });
+document.getElementById("pvMarkAll").addEventListener("click",function(){ document.querySelectorAll("#pvPlano input[type=checkbox]").forEach(function(c){c.checked=true;}); countPv(); });
+document.getElementById("pvClearAll").addEventListener("click",function(){ document.querySelectorAll("#pvPlano input[type=checkbox]").forEach(function(c){c.checked=false;}); countPv(); });
+document.getElementById("pvSave").addEventListener("click",function(){
+  var eq=+document.getElementById("pvEquip").value;
+  var data=document.getElementById("pvData").value;
+  if(!data){ toast("Informe a data da execução."); return; }
+  var itens=[]; document.querySelectorAll("#pvPlano input[type=checkbox]:checked").forEach(function(c){ itens.push(c.value); });
+  var obj={ eq:eq, data:data, per:document.getElementById("pvPer").value,
+    tec:document.getElementById("pvTec").value.trim(), os:document.getElementById("pvOS").value.trim(),
+    obs:document.getElementById("pvObs").value.trim(), itens:itens };
+  if(pvAtual){ Object.keys(obj).forEach(function(k){ pvAtual[k]=obj[k]; }); toast("Preventiva atualizada."); }
+  else { obj.id=nextId(); S.prev.push(obj); toast("Preventiva registrada."); }
+  delete S.prog[eq+"|"+obj.per];
+  save(); closeOv(); render();
+});
+document.getElementById("pvDelete").addEventListener("click",function(){
+  if(!pvAtual) return;
+  if(!confirm("Excluir este registro de preventiva?")) return;
+  S.prev=S.prev.filter(function(p){ return p.id!==pvAtual.id; });
+  save(); closeOv(); render(); toast("Registro excluído.");
+});
+
+var pgAtual=null;
+function abrirProg(id){
+  pgAtual=S.equip.filter(function(e){return e.id===id;})[0];
+  if(!pgAtual) return;
+  var per=UI.progPer, pg=S.prog[id+"|"+per], s=statusDe(id,per);
+  document.getElementById("pgWho").textContent = pgAtual.unid+" · "+(pgAtual.setor||"—")+" · tag "+pgAtual.tag
+    +" — "+PER_NOME[per]+". Vencimento calculado: "+fmt(s.prox)+".";
+  document.getElementById("pgData").value = pg? pg.data : (s.prox? toISO(s.prox):"");
+  document.getElementById("pgTec").value = pg? (pg.tec||"") : "Itamar";
+  document.getElementById("pgObs").value = pg? (pg.obs||"") : "";
+  document.getElementById("pgClear").hidden = !pg;
+  openOv("ovProg");
+}
+document.getElementById("pgSave").addEventListener("click",function(){
+  if(!pgAtual) return;
+  var d=document.getElementById("pgData").value;
+  if(!d){ toast("Informe a data programada."); return; }
+  S.prog[pgAtual.id+"|"+UI.progPer]={data:d, tec:document.getElementById("pgTec").value.trim(), obs:document.getElementById("pgObs").value.trim()};
+  save(); closeOv(); render(); toast("Programação salva.");
+});
+document.getElementById("pgClear").addEventListener("click",function(){
+  if(!pgAtual) return;
+  delete S.prog[pgAtual.id+"|"+UI.progPer];
+  save(); closeOv(); render(); toast("Programação removida.");
+});
+
+function abrirLote(){
+  var sel=document.getElementById("loUnid");
+  sel.innerHTML=unidades().map(function(u){return '<option value="'+esc(u)+'">'+esc(u)+'</option>';}).join("");
+  if(UI.unit) sel.value=UI.unit;
+  document.getElementById("loData").value=toISO(hoje());
+  document.getElementById("loTec").value="Itamar";
+  previewLote(); openOv("ovLote");
+}
+function alvosLote(){
+  var u=document.getElementById("loUnid").value, modo=document.getElementById("loSo").value, per=UI.progPer;
+  return S.equip.filter(function(e){
+    if(e.unid!==u) return false;
+    var k=statusDe(e.id,per).k;
+    if(modo==="all") return true;
+    if(modo==="bad") return k==="bad";
+    if(modo==="badwarn") return k==="bad"||k==="warn";
+    if(modo==="none") return k==="none";
+    return true;
+  });
+}
+function previewLote(){
+  var n=alvosLote().length;
+  document.getElementById("loPreview").textContent = n? (n+" aparelho"+(n>1?"s serão programados":" será programado")+".") : "Nenhum aparelho se encaixa nesse filtro.";
+}
+["loUnid","loSo"].forEach(function(id){ document.getElementById(id).addEventListener("change",previewLote); });
+document.getElementById("loSave").addEventListener("click",function(){
+  var d=document.getElementById("loData").value;
+  if(!d){ toast("Informe a data programada."); return; }
+  var tec=document.getElementById("loTec").value.trim(), alvos=alvosLote();
+  if(!alvos.length){ toast("Nenhum aparelho se encaixa nesse filtro."); return; }
+  alvos.forEach(function(e){ S.prog[e.id+"|"+UI.progPer]={data:d,tec:tec,obs:""}; });
+  save(); closeOv(); render(); toast(alvos.length+" aparelhos programados para "+fmt(parseD(d))+".");
+});
+
+/* Salvar arquivo: usa a capability "downloads" quando a página está publicada
+   como artefato; fora dela, cai no download comum do navegador. */
+var DL = null, dlPronto = false;
+if (window.claude && typeof window.claude.use === "function") {
+  window.claude.use("downloads").then(function(d){ DL = d; dlPronto = true; },
+                                      function(){ dlPronto = true; });
+} else { dlPronto = true; }
+
+function entregar(nome, blob, txtOk){
+  if (DL) {
+    DL.save({filename:nome, data:blob}).then(function(){ toast(txtOk); },
+      function(err){
+        var c = err && err.code;
+        if (c === "declined") return;
+        if (c === "rate_limited") { toast("Já tem um download em andamento. Tente de novo em instantes."); return; }
+        toast("Não foi possível baixar o arquivo aqui.");
+      });
+    return;
+  }
+  var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=nome;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1500);
+  toast(txtOk);
+}
+function baixar(nome, texto, txtOk){
+  entregar(nome, new Blob(["\ufeff"+texto],{type:"text/csv;charset=utf-8;"}), txtOk);
+}
+function csv(linhas){
+  return linhas.map(function(l){
+    return l.map(function(c){ c=String(c==null?"":c); return /[";\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c; }).join(";");
+  }).join("\n");
+}
+document.getElementById("btnExportInv").addEventListener("click",function(){
+  var L=[["Tag","Unidade","Pavimento","Setor","Local/Responsável","Capacidade (BTU/h)","Marca","Gás","Modelo","Nº de série","Wi-Fi","Situação no cadastro","Folha","Última preventiva","Próxima","Situação preventiva","Observação"]];
+  equipVisiveis().forEach(function(e){
+    var s=statusDe(e.id,"T");
+    L.push([e.tag,e.unid,e.pav,e.setor,e.local,e.cap,e.marca,e.gas,e.modelo,e.serie,e.wifi,e.sit,e.folha,
+      s.ultima?fmt(s.ultima):"",s.prox?fmt(s.prox):"",s.k==="none"?"Sem registro":s.label,e.obs]);
+  });
+  baixar("PMOC_inventario.csv",csv(L),"CSV do inventário baixado.");
+});
+document.getElementById("btnExportProg").addEventListener("click",function(){
+  var per=UI.progPer;
+  var L=[["Tag","Unidade","Setor","Periodicidade","Última execução","Vence em","Data programada","Técnico previsto","Situação","Observação"]];
+  equipVisiveis().forEach(function(e){
+    var s=statusDe(e.id,per), pg=S.prog[e.id+"|"+per];
+    L.push([e.tag,e.unid,e.setor,PER_NOME[per],s.ultima?fmt(s.ultima):"",s.prox?fmt(s.prox):"",
+      pg?fmt(parseD(pg.data)):"",pg?pg.tec:"",s.k==="none"?"Sem registro":s.label,pg?pg.obs:""]);
+  });
+  baixar("PMOC_programacao.csv",csv(L),"CSV da programação baixado.");
+});
+document.getElementById("btnExportHist").addEventListener("click",function(){
+  var L=[["Data","Tag","Unidade","Setor","Periodicidade","Executante","Nº da OS","Itens executados","Itens (códigos)","Observação"]];
+  S.prev.slice().sort(function(a,b){return b.data.localeCompare(a.data);}).forEach(function(p){
+    var e=S.equip.filter(function(x){return x.id===p.eq;})[0]; if(!e) return;
+    if(UI.unit && e.unid!==UI.unit) return;
+    L.push([fmt(parseD(p.data)),e.tag,e.unid,e.setor,PER_NOME[p.per]||p.per,p.tec,p.os,(p.itens||[]).length,(p.itens||[]).join(" "),p.obs]);
+  });
+  baixar("PMOC_preventivas.csv",csv(L),"CSV das preventivas baixado.");
+});
+document.getElementById("btnExportPlano").addEventListener("click",function(){
+  var L=[["Grupo","Item","Descrição","Periodicidade","Era mensal no PMOC original"]];
+  PLANO.forEach(function(g){ g.itens.forEach(function(i){ L.push([g.n+". "+g.d,i.n,i.d,PER_NOME[i.p],i.o==="M"?"Sim":"Não"]); }); });
+  baixar("PMOC_plano_manutencao.csv",csv(L),"CSV do plano baixado.");
+});
+
+document.getElementById("btnBackup").addEventListener("click",function(){
+  entregar("PMOC_backup_"+toISO(hoje())+".json",
+           new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),
+           "Backup baixado.");
+});
+document.getElementById("btnRestore").addEventListener("click",function(){ document.getElementById("fileRestore").click(); });
+document.getElementById("fileRestore").addEventListener("change",function(ev){
+  var f=ev.target.files[0]; if(!f) return;
+  var fr=new FileReader();
+  fr.onload=function(){
+    try{
+      var d=JSON.parse(fr.result);
+      if(!d || !Array.isArray(d.equip)) throw new Error("formato");
+      if(!confirm("Restaurar este backup? Os registros atuais deste aparelho serão substituídos.")) return;
+      S.equip=d.equip; S.prev=d.prev||[]; S.prog=d.prog||{}; S.seq=d.seq||1000;
+      save(); render(); toast("Backup restaurado.");
+    }catch(e){ toast("Esse arquivo não é um backup válido deste painel."); }
+  };
+  fr.readAsText(f); ev.target.value="";
+});
+
+document.getElementById("tabs").addEventListener("click",function(ev){
+  var b=ev.target.closest("button[data-view]"); if(b) setView(b.dataset.view);
+});
+document.getElementById("btnNovoEquip").addEventListener("click",function(){ abrirEquip(null); });
+document.getElementById("btnNovaPrev").addEventListener("click",function(){ abrirPrev(null,null); });
+document.getElementById("btnNovaPrevTop").addEventListener("click",function(){ abrirPrev(null,null); });
+document.getElementById("btnProgLote").addEventListener("click",abrirLote);
+document.getElementById("invSearch").addEventListener("input",function(){ UI.invQ=this.value; renderInv(); });
+document.getElementById("invSit").addEventListener("change",function(){ UI.invSit=this.value; renderInv(); });
+document.getElementById("invStatus").addEventListener("change",function(){ UI.invStatus=this.value; renderInv(); });
+document.getElementById("progSearch").addEventListener("input",function(){ UI.progQ=this.value; renderProg(); });
+document.getElementById("progPer").addEventListener("change",function(){ UI.progPer=this.value; renderProg(); });
+document.getElementById("histSearch").addEventListener("input",function(){ UI.histQ=this.value; renderHist(); });
+document.getElementById("histPer").addEventListener("change",function(){ UI.histPer=this.value; renderHist(); });
+
+load(); fillDatalists(); render(); setLive("salvo neste aparelho", true);
+})();
+</script>
+</body>
+</html>
